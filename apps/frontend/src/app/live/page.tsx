@@ -4,10 +4,11 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useRoomStore } from '@/store/useRoomStore';
 import { useLibraryStore } from '@/store/useLibraryStore';
-import { ChevronLeft, MoreVertical, Music2, ArrowUp, Users, Menu } from 'lucide-react';
+import { ChevronLeft, Flame, MoreVertical, Music2, ArrowUp, Users, Menu } from 'lucide-react';
 import { useUIStore } from '@/store/useUIStore';
 import { cn } from '@/components/Navigation/BottomNav';
 import { User } from '@app/shared';
+import ThemeToggle from '@/components/ThemeToggle';
 
 export default function LiveRoom() {
   const router = useRouter();
@@ -86,17 +87,27 @@ export default function LiveRoom() {
       {/* Background Ambience */}
       <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
       
-      <header className="px-4 py-4 flex items-center justify-between z-10 relative">
-        <button 
-          onClick={() => {
-            if (!isViewMode) leaveRoom();
-            router.back();
-          }} 
-          className="w-10 h-10 flex items-center justify-center bg-foreground/5 rounded-full hover:bg-foreground/10 transition-colors"
-        >
-          <ChevronLeft className="w-6 h-6 text-foreground" />
-        </button>
-        <div className="flex gap-2">
+            <header className="px-4 py-4 flex items-center justify-between z-10 relative">
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => {
+              if (!isViewMode) leaveRoom();
+              router.back();
+            }} 
+            className="w-10 h-10 flex items-center justify-center bg-foreground/5 rounded-full hover:bg-foreground/10 transition-colors"
+          >
+            <ChevronLeft className="w-6 h-6 text-foreground" />
+          </button>
+          
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-black shadow-[0_0_10px_rgba(255,122,0,0.4)]">
+              <Flame className="w-4 h-4 fill-current" />
+            </div>
+            <span className="font-bold tracking-wide text-foreground">Sur Sangeet</span>
+          </div>
+        </div>
+
+        <div className="flex gap-2 items-center">
           {!isViewMode && (
             <button 
               onClick={() => setShowMembers(true)}
@@ -108,9 +119,7 @@ export default function LiveRoom() {
               </span>
             </button>
           )}
-          <button className="w-10 h-10 flex items-center justify-center bg-foreground/5 rounded-full hover:bg-foreground/10 transition-colors">
-            <MoreVertical className="w-5 h-5 text-foreground" />
-          </button>
+          <ThemeToggle />
         </div>
       </header>
 
@@ -267,5 +276,6 @@ export default function LiveRoom() {
     </div>
   );
 }
+
 
 
