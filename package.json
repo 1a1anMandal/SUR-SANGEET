@@ -20,10 +20,5 @@
   "type": "module",
   "devDependencies": {
     "concurrently": "^10.0.5"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "*"
-    ]
   }
 }
