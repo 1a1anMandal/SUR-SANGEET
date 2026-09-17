@@ -60,7 +60,7 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
       const timeout = setTimeout(() => {
         alert('Could not connect to Live Server. Please verify the Socket URL.');
         resolve('');
-      }, 5000);
+      }, 15000);
 
       socket.emit('create_room', { leaderId, leaderName, bhajanId, roomId }, (res: any) => {
         clearTimeout(timeout);
@@ -85,7 +85,7 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
       const timeout = setTimeout(() => {
         alert('Could not connect to Live Server.');
         resolve(false);
-      }, 5000);
+      }, 15000);
 
       socket.emit('join_room', { roomId, userId, name }, (res: any) => {
         clearTimeout(timeout);
@@ -144,3 +144,4 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     });
   }
 }));
+
