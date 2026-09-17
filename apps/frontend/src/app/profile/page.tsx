@@ -179,12 +179,12 @@ export default function Profile() {
 
       <div className="space-y-4 relative z-10">
         <h3 className="font-bold flex items-center gap-2 mb-4">
-          <Heart className="w-5 h-5 text-red-500 fill-current" /> Saved Bhajans
+          <Heart className="w-5 h-5 text-red-500 fill-current" /> Liked Bhajans
         </h3>
         
         <div className="space-y-3">
           {favouriteBhajans.map(bhajan => (
-            <div key={bhajan.id} className="glass p-4 rounded-2xl flex items-center gap-4">
+            <div key={bhajan.id} onClick={() => router.push(`/live?viewLyrics=${bhajan.id}`)} className="glass p-4 rounded-2xl flex items-center gap-4 cursor-pointer hover:border-primary/50 hover:bg-foreground/5 transition-all active:scale-[0.98]">
               <div className="w-12 h-12 rounded-xl bg-foreground/[0.08] flex items-center justify-center overflow-hidden">
                 <Music2 className="text-primary/40" />
               </div>
@@ -211,4 +211,5 @@ export default function Profile() {
     </main>
   );
 }
+
 
