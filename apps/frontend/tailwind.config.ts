@@ -11,13 +11,13 @@ const config: Config = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#FF7A00', // Copper/Orange accent
+          DEFAULT: '#FF7A00',
           glow: '#FFA855',
         },
-        background: 'var(--background)',
-        foreground: 'var(--foreground)',
-        card: 'var(--card)',
-        'card-foreground': 'var(--card-foreground)',
+        background: 'rgb(var(--background) / <alpha-value>)',
+        foreground: 'rgb(var(--foreground) / <alpha-value>)',
+        card: 'rgb(var(--card) / <alpha-value>)',
+        'card-foreground': 'rgb(var(--card-foreground) / <alpha-value>)',
       },
       fontFamily: {
         sans: ['var(--font-inter)', 'sans-serif'],

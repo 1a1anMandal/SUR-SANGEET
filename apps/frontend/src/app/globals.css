@@ -4,17 +4,17 @@
 
 @layer base {
   :root {
-    --background: #F4EFE6; /* Soft Beige */
-    --foreground: #4A3B32; /* Warm Dark Brown/Gray */
-    --card: #ffffff;
-    --card-foreground: #4A3B32;
+    --background: 244 239 230; /* #F4EFE6 */
+    --foreground: 74 59 50; /* #4A3B32 */
+    --card: 255 255 255;
+    --card-foreground: 74 59 50;
   }
 
   .dark {
-    --background: #0f0f0f;
-    --foreground: #e0e0e0;
-    --card: #1c1c1c;
-    --card-foreground: #e0e0e0;
+    --background: 15 15 15; /* #0f0f0f */
+    --foreground: 224 224 224; /* #e0e0e0 */
+    --card: 28 28 28; /* #1c1c1c */
+    --card-foreground: 224 224 224;
   }
 }
 
@@ -32,7 +32,7 @@
   }
   
   .dark .glass {
-    @apply bg-black/40 backdrop-blur-lg border border-white/5 shadow-none;
+    @apply bg-black/40 backdrop-blur-lg border border-foreground/5 shadow-none;
   }
 
   .text-glow {
