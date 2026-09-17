@@ -78,7 +78,7 @@ export default function LiveRoom() {
   }
 
   // Get next in queue title safely
-  const nextInQueueBhajan = queue.length > 0 ? bhajans.find(b => b.id === queue[0].bhajanId) : null;
+  const nextInQueueBhajan = queue.length > 0 ? bhajans.find(b => b.id === queue[0].id) : null;
 
   return (
     <div className="h-screen flex flex-col bg-background font-sans overflow-hidden relative selection:bg-primary/20">
@@ -216,7 +216,7 @@ export default function LiveRoom() {
 
             <div className="flex-1 overflow-y-auto px-6 space-y-4 pb-10">
               {queue.map((q, idx) => {
-                const b = bhajans.find(x => x.id === q.bhajanId);
+                const b = bhajans.find(x => x.id === q.id);
                 if (!b) return null;
                 return (
                   <div key={q.id} className="flex items-center justify-between glass p-4 rounded-2xl border-foreground/5 bg-foreground/[0.02]">
@@ -267,3 +267,4 @@ export default function LiveRoom() {
     </div>
   );
 }
+
