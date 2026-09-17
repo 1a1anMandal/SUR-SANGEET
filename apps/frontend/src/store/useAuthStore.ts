@@ -8,6 +8,7 @@ interface User {
   username: string;
   mobile: string;
   avatar_url?: string;
+  role?: 'user' | 'admin';
 }
 
 interface AuthStore {
@@ -61,6 +62,7 @@ export const useAuthStore = create<AuthStore>()(
     }
   )
 );
+
 
 
 
