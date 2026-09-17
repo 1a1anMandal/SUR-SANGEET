@@ -68,7 +68,7 @@ export default function AdminDashboard() {
   };
 
   const deleteUser = async (id: string, name: string) => {
-    if (!confirm(Are you absolutely sure you want to delete the user " + name + "? This cannot be undone.)) return;
+    if (!confirm("Are you absolutely sure you want to delete the user `" + name + "`? This cannot be undone.")) return;
     setActionLoading('Deleting User...');
     const { error } = await supabase.from('users').delete().eq('id', id);
     if (!error) {
@@ -314,3 +314,4 @@ export default function AdminDashboard() {
     </div>
   );
 }
+
