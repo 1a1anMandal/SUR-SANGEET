@@ -77,6 +77,9 @@ export default function LiveRoom() {
     );
   }
 
+  // Get next in queue title safely
+  const nextInQueueBhajan = queue.length > 0 ? bhajans.find(b => b.id === queue[0].bhajanId) : null;
+
   return (
     <div className="h-screen flex flex-col bg-background font-sans overflow-hidden relative selection:bg-primary/20">
       
@@ -133,7 +136,6 @@ export default function LiveRoom() {
         >
           <div className="space-y-6 pt-[30vh] pb-[50vh]">
             {activeBhajan.lyrics.map((paragraph, idx) => {
-              // Now we only highlight the exact stanza (4 lines)
               const isActive = idx === activeParagraphIndex;
               
               return (
@@ -175,7 +177,7 @@ export default function LiveRoom() {
                 <div className="text-left">
                   <p className="text-xs font-bold text-foreground">Up Next</p>
                   <p className="text-[10px] text-foreground/50 truncate w-24">
-                    {queue.length > 0 ? queue[0].title : 'Add to queue'}
+                    {nextInQueueBhajan ? nextInQueueBhajan.title : 'Add to queue'}
                   </p>
                 </div>
               </button>
@@ -265,4 +267,3 @@ export default function LiveRoom() {
     </div>
   );
 }
-
