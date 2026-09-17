@@ -20,17 +20,20 @@ export default function AdminDashboard() {
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
   useEffect(() => {
-    if (!user) {
-      router.push('/login');
-      return;
-    }
-    verifyAdminStatus();
-  }, [user, router]);
+    // Wait a short moment to allow Zustand to hydrate from local storage
+    const timer = setTimeout(() => {
+      const currentUser = useAuthStore.getState().user;
+      if (!currentUser) {
+        router.push('/login');
+      } else {
+        verifyAdminStatus(currentUser);
+      }
+    }, 200);
+    return () => clearTimeout(timer);
+  }, [router]);
 
-  // We check directly from DB because local storage might have cached the old role!
-  const verifyAdminStatus = async () => {
-    if (!user) return;
-    const { data } = await supabase.from('users').select('role').eq('id', user.id).single();
+  const verifyAdminStatus = async (currentUser: any) => {
+    const { data } = await supabase.from('users').select('role').eq('id', currentUser.id).single();
     if (data?.role === 'admin') {
       setIsAdmin(true);
       fetchData();
@@ -89,11 +92,9 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col md:flex-row font-sans selection:bg-primary/30 relative overflow-hidden">
-      {/* Premium Background Glow */}
       <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-orange-600/10 rounded-full blur-[120px] translate-x-1/3 translate-y-1/3 pointer-events-none" />
 
-      {/* Sidebar */}
       <aside className="w-full md:w-72 bg-black/40 backdrop-blur-2xl border-b md:border-b-0 md:border-r border-white/5 p-6 flex flex-col h-auto md:h-screen sticky top-0 z-10">
         <div className="flex items-center justify-between mb-12">
           <div className="flex items-center gap-3">
@@ -143,10 +144,7 @@ export default function AdminDashboard() {
         </div>
       </aside>
 
-      {/* Main Content */}
       <main className="flex-1 p-6 md:p-12 overflow-y-auto z-10">
-        
-        {/* Dashboard Tab */}
         {activeTab === 'dashboard' && (
           <div className="space-y-8 animate-fade-in max-w-5xl">
             <header className="mb-10">
@@ -182,7 +180,6 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* Users Tab */}
         {activeTab === 'users' && (
           <div className="space-y-8 animate-fade-in max-w-6xl">
             <header className="mb-8 flex justify-between items-end">
@@ -207,8 +204,13 @@ export default function AdminDashboard() {
                       <tr key={u.id} className="hover:bg-white/[0.02] transition-colors group">
                         <td className="p-5">
                           <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-orange-500/20 border border-primary/20 flex items-center justify-center text-primary font-bold">
-                              {u.name.charAt(0).toUpperCase()}
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-orange-500/20 border border-primary/20 flex items-center justify-center text-primary font-bold overflow-hidden">
+                              {u.avatar_url ? (
+                                /* eslint-disable-next-line @next/next/no-img-element */
+                                <img src={u.avatar_url} alt={u.name} className="w-full h-full object-cover" />
+                              ) : (
+                                u.name.charAt(0).toUpperCase()
+                              )}
                             </div>
                             <div>
                               <p className="font-bold text-white group-hover:text-primary transition-colors">{u.name}</p>
@@ -231,7 +233,6 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* Bhajans Tab */}
         {activeTab === 'bhajans' && (
           <div className="space-y-8 animate-fade-in max-w-7xl">
             <header className="mb-8 flex justify-between items-end">
@@ -256,7 +257,7 @@ export default function AdminDashboard() {
                     
                     <div className="bg-black/40 p-4 rounded-2xl max-h-40 overflow-hidden relative mb-6 border border-white/5">
                       <p className="text-sm text-foreground/70 whitespace-pre-line leading-relaxed font-medium">
-                        {Array.isArray(bhajan.lyrics) ? bhajan.lyrics.join('\n') : ''}
+                        {Array.isArray(bhajan.lyrics) ? bhajan.lyrics.map(l => l.hindi).join('\n') : ''}
                       </p>
                       <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#0a0a0a] to-transparent" />
                     </div>

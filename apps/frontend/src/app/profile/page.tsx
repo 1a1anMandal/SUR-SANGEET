@@ -51,7 +51,6 @@ export default function Profile() {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        // Compress image using canvas
         const img = new Image();
         img.src = reader.result as string;
         img.onload = () => {
@@ -76,7 +75,7 @@ export default function Profile() {
           canvas.height = height;
           const ctx = canvas.getContext('2d');
           ctx?.drawImage(img, 0, 0, width, height);
-          setEditAvatar(canvas.toDataURL('image/jpeg', 0.7)); // Compress to 70% quality JPEG
+          setEditAvatar(canvas.toDataURL('image/jpeg', 0.7)); 
         };
       };
       reader.readAsDataURL(file);
@@ -124,9 +123,18 @@ export default function Profile() {
           <>
             <h2 className="text-xl font-bold">{user.name}</h2>
             <p className="text-sm text-foreground/50">@{user.username}</p>
-            <span className="mt-2 bg-primary/20 text-primary px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase">
-              {user.role || 'Devotee'}
-            </span>
+            {user.role === 'admin' ? (
+              <button 
+                onClick={() => router.push('/admin')} 
+                className="mt-2 flex items-center gap-1 bg-primary/20 hover:bg-primary/30 text-primary px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest uppercase transition-colors cursor-pointer shadow-[0_0_10px_rgba(255,122,0,0.2)]"
+              >
+                Admin Panel ?
+              </button>
+            ) : (
+              <span className="mt-2 bg-primary/20 text-primary px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase">
+                {user.role || 'Devotee'}
+              </span>
+            )}
           </>
         ) : (
           <div className="w-full space-y-4 max-w-sm">
