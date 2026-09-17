@@ -15,7 +15,7 @@ interface AuthStore {
   user: User | null;
   favorites: string[];
   login: (name: string, mobile: string) => Promise<boolean>;
-  updateUser: (data: Partial<User>) => Promise<void>;
+  updateUser: (data: Partial<User>) => Promise<boolean>;
   logout: () => void;
   toggleFavorite: (bhajanId: string) => Promise<void>;
   fetchFavorites: () => Promise<void>;
@@ -26,12 +26,37 @@ export const useAuthStore = create<AuthStore>()(
     (set, get) => ({
       user: null,
       favorites: [],
-      login: async (name, mobile) => { try { const { data: existingUser } = await supabase.from('users').select('*').eq('mobile', mobile).maybeSingle(); if (existingUser) { set({ user: existingUser }); get().fetchFavorites(); return true; } const username = name.toLowerCase().replace(/\\s+/g, '') + Math.floor(Math.random() * 1000); const { data: newUser, error: insertError } = await supabase.from('users').insert([{ name, username, mobile }]).select().single(); if (!insertError && newUser) { set({ user: newUser }); return true; } alert('Insert Error: ' + (insertError?.message || 'Unknown')); return false; } catch (err: any) { alert('Exception: ' + err.message); return false; } }, updateUser: async (data) => {
+      login: async (name, mobile) => {
+        try {
+          const { data: existingUser } = await supabase.from('users').select('*').eq('mobile', mobile).maybeSingle();
+          if (existingUser) {
+            set({ user: existingUser });
+            get().fetchFavorites();
+            return true;
+          }
+          const username = name.toLowerCase().replace(/\s+/g, '') + Math.floor(Math.random() * 1000);
+          const { data: newUser, error: insertError } = await supabase.from('users').insert([{ name, username, mobile }]).select().single();
+          if (!insertError && newUser) {
+            set({ user: newUser });
+            return true;
+          }
+          alert('Insert Error: ' + (insertError?.message || 'Unknown'));
+          return false;
+        } catch (err: any) {
+          alert('Exception: ' + err.message);
+          return false;
+        }
+      },
+      updateUser: async (data) => {
         const { user } = get();
-        if (!user) return;
+        if (!user) return false;
         const { error } = await supabase.from('users').update(data).eq('id', user.id);
         if (!error) {
           set((state) => ({ user: state.user ? { ...state.user, ...data } : null }));
+          return true;
+        } else {
+          alert('Failed to update profile: ' + error.message);
+          return false;
         }
       },
       logout: () => set({ user: null, favorites: [] }),
@@ -52,19 +77,13 @@ export const useAuthStore = create<AuthStore>()(
           await supabase.from('favorites').delete().match({ user_id: user.id, bhajan_id: bhajanId });
           set({ favorites: favorites.filter(id => id !== bhajanId) });
         } else {
-          await supabase.from('favorites').insert([{ user_id: user.id, bhajan_id: bhajanId }]);
+          await supabase.from('favorites').insert({ user_id: user.id, bhajan_id: bhajanId });
           set({ favorites: [...favorites, bhajanId] });
         }
       }
     }),
     {
-      name: 'auth-storage',
+      name: 'sur-sangeet-auth',
     }
   )
 );
-
-
-
-
-
-
