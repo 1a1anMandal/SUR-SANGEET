@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useRoomStore } from '@/store/useRoomStore';
 import { Flame, UserCircle2, Phone } from 'lucide-react';
 
 import ThemeToggle from '@/components/ThemeToggle';
@@ -10,9 +11,15 @@ import ThemeToggle from '@/components/ThemeToggle';
 export default function Login() {
   const router = useRouter();
   const login = useAuthStore(state => state.login);
+  const initSocket = useRoomStore(state => state.initSocket);
   
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
+
+  // Eagerly initialize socket to wake up backend (Railway) from sleep
+  useEffect(() => {
+    initSocket();
+  }, [initSocket]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,4 +110,5 @@ export default function Login() {
     </main>
   );
 }
+
 

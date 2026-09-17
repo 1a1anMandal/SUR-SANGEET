@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useRoomStore } from '@/store/useRoomStore';
 import { useAuthStore } from '@/store/useAuthStore';
@@ -10,7 +10,7 @@ import ThemeToggle from '@/components/ThemeToggle';
 
 export default function HomeDashboard() {
   const router = useRouter();
-  const { createRoom, joinRoom, roomId } = useRoomStore();
+  const { createRoom, joinRoom, roomId, initSocket } = useRoomStore();
   const user = useAuthStore(state => state.user);
   const bhajans = useLibraryStore(state => state.bhajans);
   
@@ -23,6 +23,11 @@ export default function HomeDashboard() {
   const [startingBhajan, setStartingBhajan] = useState(bhajans.length > 0 ? bhajans[0].id : '');
   const [isCreating, setIsCreating] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
+
+  // Eagerly initialize socket to wake up backend (Railway) from sleep
+  useEffect(() => {
+    initSocket();
+  }, [initSocket]);
 
   const filteredBhajans = bhajans.filter(b => 
     b.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -209,3 +214,4 @@ export default function HomeDashboard() {
     </main>
   );
 }
+
