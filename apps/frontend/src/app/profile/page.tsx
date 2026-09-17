@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useState, useRef } from 'react';
 import { UserCircle2, Phone, LogOut, Edit2, Heart, Music2, Flame, Check, Camera, Loader2 } from 'lucide-react';
 import ThemeToggle from '@/components/ThemeToggle';
+import FullScreenLoader from '@/components/FullScreenLoader';
 
 export default function Profile() {
   const router = useRouter();
@@ -84,6 +85,7 @@ export default function Profile() {
 
   return (
     <main className="pb-24 pt-6 px-4 relative h-screen overflow-y-auto">
+      {isSaving && <FullScreenLoader text="Saving Profile..." />}
       <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2 pointer-events-none" />
       
       <header className="flex justify-between items-center mb-8 relative z-10">
@@ -209,3 +211,4 @@ export default function Profile() {
     </main>
   );
 }
+

@@ -7,6 +7,7 @@ import { useRoomStore } from '@/store/useRoomStore';
 import { Flame, UserCircle2, Phone } from 'lucide-react';
 
 import ThemeToggle from '@/components/ThemeToggle';
+import FullScreenLoader from '@/components/FullScreenLoader';
 
 export default function Login() {
   const router = useRouter();
@@ -15,8 +16,8 @@ export default function Login() {
   
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Eagerly initialize socket to wake up backend (Railway) from sleep
   useEffect(() => {
     initSocket();
   }, [initSocket]);
@@ -32,21 +33,25 @@ export default function Login() {
       return;
     }
     
+    setIsLoading(true);
     const success = await login(name, mobile);
     if (success) {
-      router.push('/library'); // Default route after login
+      router.push('/library'); 
     } else {
-      // handled in store
+      setIsLoading(false);
+      alert('Login failed. Please try again.');
     }
   };
 
   return (
-    <main className="h-screen flex flex-col p-6 relative overflow-hidden bg-background">
-      {/* Background decorations */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2 pointer-events-none" />
+    <main className="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden">
+      {isLoading && <FullScreenLoader text="Authenticating..." />}
       
-      {/* Header */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/20 rounded-full blur-[100px] animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-orange-600/20 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '2s' }} />
+      </div>
+
       <header className="z-10 flex justify-between items-center mb-10 w-full max-w-sm mx-auto">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-foreground shadow-[0_0_10px_rgba(255,122,0,0.4)]">
@@ -57,58 +62,60 @@ export default function Login() {
         <ThemeToggle />
       </header>
 
-      <div className="z-10 w-full max-w-sm mx-auto flex-1 flex flex-col justify-center pb-20">
-        <div className="flex flex-col items-center text-center mb-8">
-          <h1 className="text-3xl font-black tracking-wide text-glow text-primary mb-2">Welcome</h1>
-          <p className="text-sm text-foreground/60">Connect. Sing. Devote.</p>
+      <div className="w-full max-w-sm z-10">
+        <div className="glass p-8 rounded-[2rem] shadow-2xl border-white/10">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-black mb-2 text-glow">Welcome</h1>
+            <p className="text-sm text-foreground/60 font-medium">Enter your details to join the sanctuary.</p>
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-5">
+            <div>
+              <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-2 block ml-1">
+                Full Name
+              </label>
+              <div className="bg-foreground/[0.05] rounded-xl flex items-center px-4 py-3 gap-3 border border-foreground/5 focus-within:border-primary/50 transition-colors">
+                <UserCircle2 className="w-5 h-5 text-primary/60" />
+                <input 
+                  type="text" 
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="bg-transparent flex-1 outline-none font-bold text-foreground placeholder:text-foreground/30"
+                  placeholder="Enter your name"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-2 block ml-1">
+                Mobile Number
+              </label>
+              <div className="bg-foreground/[0.05] rounded-xl flex items-center px-4 py-3 gap-3 border border-foreground/5 focus-within:border-primary/50 transition-colors">
+                <Phone className="w-5 h-5 text-primary/60" />
+                <input 
+                  type="tel" 
+                  value={mobile}
+                  onChange={(e) => setMobile(e.target.value.replace(/\D/g, ''))}
+                  maxLength={10}
+                  className="bg-transparent flex-1 outline-none font-bold text-foreground placeholder:text-foreground/30 tracking-widest"
+                  placeholder="0000000000"
+                />
+              </div>
+            </div>
+
+            <button 
+              type="submit" 
+              className="w-full bg-gradient-to-r from-primary to-orange-500 text-black font-black py-4 rounded-xl mt-4 shadow-[0_0_20px_rgba(255,122,0,0.3)] hover:shadow-[0_0_30px_rgba(255,122,0,0.5)] active:scale-95 transition-all"
+            >
+              Enter Sanctuary
+            </button>
+          </form>
         </div>
-
-        <form onSubmit={handleLogin} className="glass p-6 rounded-3xl space-y-5 shadow-xl border-primary/20">
-          <h2 className="text-lg font-bold text-center mb-6">Create Account / Login</h2>
-          
-          <div>
-            <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-2 block ml-1">
-              Full Name
-            </label>
-            <div className="bg-foreground/[0.05] rounded-xl flex items-center px-4 py-3 gap-3 border border-foreground/5 focus-within:border-primary/50 transition-colors">
-              <UserCircle2 className="w-5 h-5 text-primary/60" />
-              <input 
-                type="text" 
-                placeholder="Enter your name" 
-                className="bg-transparent w-full outline-none text-foreground text-sm font-medium"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-2 block ml-1">
-              Mobile Number
-            </label>
-            <div className="bg-foreground/[0.05] rounded-xl flex items-center px-4 py-3 gap-3 border border-foreground/5 focus-within:border-primary/50 transition-colors">
-              <Phone className="w-5 h-5 text-primary/60" />
-              <input 
-                type="tel" 
-                placeholder="Enter 10-digit number" 
-                className="bg-transparent w-full outline-none text-foreground text-sm font-medium"
-                value={mobile}
-                onChange={(e) => setMobile(e.target.value)}
-                maxLength={10}
-              />
-            </div>
-          </div>
-
-          <button 
-            type="submit"
-            className="w-full mt-4 py-3.5 rounded-xl bg-gradient-to-r from-primary to-orange-500 text-black font-bold flex items-center justify-center shadow-lg active:scale-95 transition-transform"
-          >
-            Continue to Sanctuary
-          </button>
-        </form>
+        
+        <p className="text-center mt-6 text-xs font-medium text-foreground/40">
+          By entering, you agree to sing with devotion.
+        </p>
       </div>
     </main>
   );
 }
-
-
