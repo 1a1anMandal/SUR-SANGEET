@@ -22,7 +22,6 @@ export default function HomeDashboard() {
   const [roomName, setRoomName] = useState('');
   const [startingBhajan, setStartingBhajan] = useState('');
 
-  // Default select the first bhajan when they load
   useEffect(() => {
     if (bhajans.length > 0 && !startingBhajan) {
       setStartingBhajan(bhajans[0].id);
@@ -51,7 +50,7 @@ export default function HomeDashboard() {
     }
   };
 
-  const shareUrl = typeof window !== 'undefined' ? /join/ : '';
+  const shareUrl = typeof window !== 'undefined' ? window.location.origin + '/join/' + roomId : '';
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(shareUrl);
@@ -216,7 +215,7 @@ export default function HomeDashboard() {
             </div>
 
             <button 
-              onClick={() => router.push(/live)}
+              onClick={() => router.push('/live')}
               className="w-full bg-gradient-to-r from-primary to-orange-500 text-black py-4 rounded-xl flex items-center justify-center gap-2 text-lg font-black shadow-lg active:scale-95 transition-transform"
             >
               Enter Studio <Flame className="w-6 h-6" />
@@ -227,5 +226,4 @@ export default function HomeDashboard() {
     </main>
   );
 }
-
 
