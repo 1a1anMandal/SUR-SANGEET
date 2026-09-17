@@ -51,7 +51,7 @@ export default function HomeDashboard() {
     }
   };
 
-  const shareUrl = typeof window !== 'undefined' ? "$"{"window.location.origin}/join/"$"{"roomId}" : '';
+  const shareUrl = typeof window !== 'undefined' ? /join/ : '';
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(shareUrl);
@@ -227,4 +227,5 @@ export default function HomeDashboard() {
     </main>
   );
 }
+
 
