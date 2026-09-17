@@ -4,10 +4,10 @@
 
 @layer base {
   :root {
-    --background: #fdfbf7; /* Light paper color */
-    --foreground: #2d1c12;
+    --background: #F4EFE6; /* Soft Beige */
+    --foreground: #4A3B32; /* Warm Dark Brown/Gray */
     --card: #ffffff;
-    --card-foreground: #2d1c12;
+    --card-foreground: #4A3B32;
   }
 
   .dark {
@@ -28,20 +28,14 @@
   }
 
   .glass {
-    @apply bg-white/5 backdrop-blur-lg border border-white/10;
+    @apply bg-foreground/[0.03] backdrop-blur-xl border border-foreground/5 shadow-sm;
   }
   
   .dark .glass {
-    @apply bg-black/40 backdrop-blur-lg border border-white/5;
+    @apply bg-black/40 backdrop-blur-lg border border-white/5 shadow-none;
   }
 
   .text-glow {
     text-shadow: 0 0 10px rgba(255, 122, 0, 0.7);
   }
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  transition: background-color 0.3s, color 0.3s;
 }

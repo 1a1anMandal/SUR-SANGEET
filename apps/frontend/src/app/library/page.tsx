@@ -40,7 +40,7 @@ export default function Library() {
       {/* Header */}
       <header className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-foreground">
             <Flame className="w-6 h-6 fill-current" />
           </div>
           <div>
@@ -80,7 +80,7 @@ export default function Library() {
             className={`px-5 py-2 rounded-full text-sm font-semibold transition-all whitespace-nowrap ${
               activeCategory === cat 
                 ? 'bg-primary text-black shadow-[0_0_15px_rgba(255,122,0,0.4)]' 
-                : 'glass text-foreground/60 hover:text-white'
+                : 'glass text-foreground/60 hover:text-foreground'
             }`}
           >
             {cat}
@@ -137,7 +137,7 @@ export default function Library() {
                   {bhajan.lyrics[0].hindi}
                 </p>
                 <div className="mt-auto flex gap-2">
-                  <span className="text-[9px] uppercase tracking-wider bg-white/5 px-2 py-1 rounded">{bhajan.deity}</span>
+                  <span className="text-[9px] uppercase tracking-wider bg-foreground/5 px-2 py-1 rounded">{bhajan.deity}</span>
                 </div>
               </div>
             </div>
@@ -145,7 +145,7 @@ export default function Library() {
             <div className="grid grid-cols-2 gap-3">
               <button 
                 onClick={() => router.push(`/live?viewLyrics=${bhajan.id}`)}
-                className="glass py-2 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:bg-white/10"
+                className="glass py-2 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:bg-foreground/10"
               >
                 <Music2 className="w-4 h-4" /> View Lyrics
               </button>

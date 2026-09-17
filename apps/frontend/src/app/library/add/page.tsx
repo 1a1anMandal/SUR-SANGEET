@@ -74,7 +74,7 @@ export default function AddBhajan() {
             <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-2 block ml-1">
               Title
             </label>
-            <div className="bg-black/20 rounded-xl flex items-center px-4 py-3 gap-3 border border-white/5 focus-within:border-primary/50 transition-colors">
+            <div className="bg-foreground/[0.05] rounded-xl flex items-center px-4 py-3 gap-3 border border-foreground/5 focus-within:border-primary/50 transition-colors">
               <Music2 className="w-5 h-5 text-primary/60" />
               <input 
                 type="text" 
@@ -90,7 +90,7 @@ export default function AddBhajan() {
             <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-2 block ml-1">
               Deity / Category
             </label>
-            <div className="bg-black/20 rounded-xl flex items-center px-4 py-3 gap-3 border border-white/5 focus-within:border-primary/50 transition-colors">
+            <div className="bg-foreground/[0.05] rounded-xl flex items-center px-4 py-3 gap-3 border border-foreground/5 focus-within:border-primary/50 transition-colors">
               <ImageIcon className="w-5 h-5 text-primary/60" />
               <input 
                 type="text" 
@@ -106,7 +106,7 @@ export default function AddBhajan() {
             <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-2 block ml-1">
               Lyrics (Hindi)
             </label>
-            <div className="bg-black/20 rounded-xl flex items-start px-4 py-3 gap-3 border border-white/5 focus-within:border-primary/50 transition-colors">
+            <div className="bg-foreground/[0.05] rounded-xl flex items-start px-4 py-3 gap-3 border border-foreground/5 focus-within:border-primary/50 transition-colors">
               <AlignLeft className="w-5 h-5 text-primary/60 mt-1" />
               <textarea 
                 placeholder="Paste the lyrics here..." 

@@ -93,7 +93,7 @@ export default function Profile() {
 
       <div className="flex flex-col items-center mb-8 relative z-10">
         <div className="relative group">
-          <div className="w-28 h-28 rounded-full border-2 border-primary/20 flex items-center justify-center overflow-hidden bg-black/40 mb-4">
+          <div className="w-28 h-28 rounded-full border-2 border-primary/20 flex items-center justify-center overflow-hidden bg-foreground/[0.08] mb-4">
             {(isEditing ? editAvatar : user.avatar_url) ? (
               /* eslint-disable-next-line @next/next/no-img-element */
               <img src={isEditing ? editAvatar : user.avatar_url} alt="Profile" className="w-full h-full object-cover" />
@@ -142,14 +142,14 @@ export default function Profile() {
               type="text"
               value={editName}
               onChange={e => setEditName(e.target.value)}
-              className="w-full bg-black/20 border border-white/5 rounded-xl px-4 py-3 text-center text-sm font-bold focus:border-primary/50 outline-none transition-colors"
+              className="w-full bg-foreground/[0.05] border border-foreground/5 rounded-xl px-4 py-3 text-center text-sm font-bold focus:border-primary/50 outline-none transition-colors"
               placeholder="Your Name"
             />
             <input 
               type="tel"
               value={editMobile}
               onChange={e => setEditMobile(e.target.value)}
-              className="w-full bg-black/20 border border-white/5 rounded-xl px-4 py-3 text-center text-sm font-bold focus:border-primary/50 outline-none transition-colors"
+              className="w-full bg-foreground/[0.05] border border-foreground/5 rounded-xl px-4 py-3 text-center text-sm font-bold focus:border-primary/50 outline-none transition-colors"
               placeholder="Mobile Number"
             />
           </div>
@@ -160,7 +160,7 @@ export default function Profile() {
         {!isEditing ? (
           <button 
             onClick={() => setIsEditing(true)}
-            className="flex-1 glass py-3 rounded-xl flex items-center justify-center gap-2 font-bold hover:bg-white/5 transition-colors"
+            className="flex-1 glass py-3 rounded-xl flex items-center justify-center gap-2 font-bold hover:bg-foreground/5 transition-colors"
           >
             <Edit2 className="w-4 h-4" /> Edit Profile
           </button>
@@ -183,7 +183,7 @@ export default function Profile() {
         <div className="space-y-3">
           {favouriteBhajans.map(bhajan => (
             <div key={bhajan.id} className="glass p-4 rounded-2xl flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-black/40 flex items-center justify-center overflow-hidden">
+              <div className="w-12 h-12 rounded-xl bg-foreground/[0.08] flex items-center justify-center overflow-hidden">
                 <Music2 className="text-primary/40" />
               </div>
               <div className="flex-1">
@@ -193,7 +193,7 @@ export default function Profile() {
             </div>
           ))}
           {favouriteBhajans.length === 0 && (
-            <div className="text-center py-6 glass rounded-2xl border-white/5 border-dashed border-2">
+            <div className="text-center py-6 glass rounded-2xl border-foreground/5 border-dashed border-2">
               <p className="text-foreground/40 text-xs">No favorites yet.</p>
             </div>
           )}

@@ -45,7 +45,7 @@ export default function LiveRoom() {
   if (!isViewMode && !roomId) {
     return (
       <div className="h-screen flex flex-col items-center justify-center p-6 text-center">
-        <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-6">
+        <div className="w-20 h-20 rounded-full bg-foreground/5 flex items-center justify-center mb-6">
           <Music2 className="w-10 h-10 text-foreground/40" />
         </div>
         <h2 className="text-xl font-bold mb-2">Not joined any room</h2>
@@ -111,7 +111,7 @@ export default function LiveRoom() {
             if (roomId) leaveRoom();
             router.push('/home');
           }}
-          className="w-10 h-10 glass rounded-full flex items-center justify-center hover:bg-white/10 transition-colors"
+          className="w-10 h-10 glass rounded-full flex items-center justify-center hover:bg-foreground/10 transition-colors"
         >
           <ChevronLeft className="w-6 h-6" />
         </button>
@@ -122,7 +122,7 @@ export default function LiveRoom() {
               <span>{participants.length} / 100</span>
             </button>
           )}
-          <button className="w-10 h-10 glass rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">
+          <button className="w-10 h-10 glass rounded-full flex items-center justify-center hover:bg-foreground/10 transition-colors">
             <MoreVertical className="w-5 h-5" />
           </button>
         </div>
@@ -159,7 +159,7 @@ export default function LiveRoom() {
                 className={cn(
                   "text-center transition-all duration-500 ease-out cursor-pointer whitespace-pre-wrap leading-relaxed px-2",
                   isActive 
-                    ? "text-[22px] sm:text-[26px] text-white font-bold scale-105" 
+                    ? "text-[22px] sm:text-[26px] text-foreground font-bold scale-105" 
                     : "text-lg text-black dark:text-foreground/40 scale-95 opacity-70"
                 )}
                 onClick={() => {
@@ -177,7 +177,7 @@ export default function LiveRoom() {
       {/* Bottom Sheet Trigger & Footer (Only in Room mode) */}
       {!isViewMode && (
         <div className="absolute bottom-0 left-0 w-full z-50">
-          <div className="glass bg-background/95 rounded-t-3xl p-4 flex items-center justify-between mx-2 mb-2 shadow-[0_-10px_30px_rgba(0,0,0,0.5)] border border-white/5">
+          <div className="glass bg-background/95 rounded-t-3xl p-4 flex items-center justify-between mx-2 mb-2 shadow-[0_-10px_30px_rgba(0,0,0,0.5)] border border-foreground/5">
             <button 
               onClick={() => setQueueSheetOpen(!isQueueSheetOpen)}
               className="flex items-center gap-2 glass px-4 py-2 rounded-full"
@@ -207,10 +207,10 @@ export default function LiveRoom() {
           isQueueSheetOpen ? "translate-y-0" : "translate-y-full"
         )}>
            <div className="p-6 flex-1 flex flex-col">
-            <div className="w-12 h-1.5 bg-white/20 rounded-full mx-auto mb-6 cursor-pointer" onClick={() => setQueueSheetOpen(false)} />
+            <div className="w-12 h-1.5 bg-foreground/20 rounded-full mx-auto mb-6 cursor-pointer" onClick={() => setQueueSheetOpen(false)} />
             
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-bold flex items-center gap-2 text-primary">Up Next <span className="text-xs text-white/50">({queue.length}/5)</span></h3>
+              <h3 className="text-lg font-bold flex items-center gap-2 text-primary">Up Next <span className="text-xs text-foreground/50">({queue.length}/5)</span></h3>
               {isMockLeader && (
                 <button onClick={() => router.push('/library')} className="text-xs bg-primary/20 text-primary px-3 py-1.5 rounded-full font-bold flex items-center gap-1">
                   Suggest <Music2 className="w-3 h-3" />
@@ -236,15 +236,15 @@ export default function LiveRoom() {
                       newQueue.splice(idx, 0, moved);
                       useRoomStore.getState().reorderQueue(newQueue);
                     }}
-                    className="flex justify-between items-center glass p-3 rounded-2xl border border-white/5"
+                    className="flex justify-between items-center glass p-3 rounded-2xl border border-foreground/5"
                   >
                     <div className="flex items-center gap-3">
-                      {isMockLeader && <Menu className="w-4 h-4 text-white/20 cursor-grab active:cursor-grabbing" />}
+                      {isMockLeader && <Menu className="w-4 h-4 text-foreground/20 cursor-grab active:cursor-grabbing" />}
                       <span className="font-bold text-sm">{b.title}</span>
                     </div>
                     <button 
                       onClick={() => useRoomStore.getState().voteQueue(q.id)}
-                      className="flex items-center gap-1 bg-white/10 px-3 py-1.5 rounded-full"
+                      className="flex items-center gap-1 bg-foreground/10 px-3 py-1.5 rounded-full"
                     >
                       <ArrowUp className="w-3 h-3 text-primary" />
                       <span className="text-xs font-bold">{q.votes}</span>
@@ -253,7 +253,7 @@ export default function LiveRoom() {
                 );
               })}
               {queue.length === 0 && (
-                <p className="text-center text-white/40 mt-10 text-sm">No bhajans in queue.</p>
+                <p className="text-center text-foreground/40 mt-10 text-sm">No bhajans in queue.</p>
               )}
             </div>
            </div>
@@ -280,7 +280,7 @@ export default function LiveRoom() {
                   </div>
                 ))}
               </div>
-              <button onClick={() => setShowMembers(false)} className="mt-6 w-full py-3 bg-white/10 rounded-xl font-bold">Close</button>
+              <button onClick={() => setShowMembers(false)} className="mt-6 w-full py-3 bg-foreground/10 rounded-xl font-bold">Close</button>
            </div>
         </div>
       )}

@@ -62,7 +62,7 @@ export default function HomeDashboard() {
     <main className="pb-24 pt-6 px-4 relative h-screen overflow-y-auto">
       <header className="flex justify-between items-center mb-10">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-foreground">
             <Flame className="w-6 h-6 fill-current" />
           </div>
           <div>
@@ -81,7 +81,7 @@ export default function HomeDashboard() {
               <input 
                 type="text" 
                 placeholder="e.g. Evening Satsang" 
-                className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-sm focus:border-primary/50 outline-none transition-colors"
+                className="w-full bg-foreground/[0.08] border border-foreground/5 rounded-xl px-4 py-3 text-sm focus:border-primary/50 outline-none transition-colors"
                 value={roomName}
                 onChange={e => setRoomName(e.target.value)}
               />
@@ -90,7 +90,7 @@ export default function HomeDashboard() {
             <div>
               <div className="flex justify-between items-center mb-3">
                 <label className="text-xs font-bold uppercase tracking-wider text-foreground/60 block">Starting Bhajan</label>
-                <div className="flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-full border border-white/5">
+                <div className="flex items-center gap-2 bg-foreground/[0.08] px-3 py-1.5 rounded-full border border-foreground/5">
                   <Search className="w-3 h-3 text-foreground/40" />
                   <input 
                     type="text" 
@@ -111,10 +111,10 @@ export default function HomeDashboard() {
                       "w-32 shrink-0 p-3 rounded-2xl cursor-pointer transition-all border",
                       startingBhajan === b.id 
                         ? "bg-primary/20 border-primary shadow-[0_0_15px_rgba(255,122,0,0.2)]" 
-                        : "glass border-white/5 opacity-60 hover:opacity-100 hover:border-white/20"
+                        : "glass border-foreground/5 opacity-60 hover:opacity-100 hover:border-foreground/20"
                     )}
                   >
-                    <div className="w-full h-16 rounded-xl bg-black/60 flex items-center justify-center mb-2 overflow-hidden relative">
+                    <div className="w-full h-16 rounded-xl bg-foreground/[0.12] flex items-center justify-center mb-2 overflow-hidden relative">
                        {b.coverImage ? (
                           /* eslint-disable-next-line @next/next/no-img-element */
                           <img src={b.coverImage} alt={b.title} className="w-full h-full object-cover" />
@@ -151,12 +151,12 @@ export default function HomeDashboard() {
           </div>
 
           <div className="flex items-center gap-4 my-2">
-            <div className="flex-1 h-px bg-white/10" />
-            <span className="text-xs font-bold uppercase tracking-widest text-white/40">OR</span>
-            <div className="flex-1 h-px bg-white/10" />
+            <div className="flex-1 h-px bg-foreground/10" />
+            <span className="text-xs font-bold uppercase tracking-widest text-foreground/40">OR</span>
+            <div className="flex-1 h-px bg-foreground/10" />
           </div>
 
-          <div className="glass p-6 rounded-3xl border-white/5 space-y-4 shadow-xl">
+          <div className="glass p-6 rounded-3xl border-foreground/5 space-y-4 shadow-xl">
             <h2 className="text-sm font-bold flex items-center gap-2">
               <Users className="w-4 h-4 text-primary" /> Join Existing Room
             </h2>
@@ -165,7 +165,7 @@ export default function HomeDashboard() {
                 type="text" 
                 maxLength={4}
                 placeholder="0000"
-                className="flex-1 w-0 min-w-0 shrink bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-center text-2xl font-black tracking-[0.3em] focus:border-primary/50 outline-none transition-colors"
+                className="flex-1 w-0 min-w-0 shrink bg-foreground/[0.12] border border-foreground/10 rounded-xl px-4 py-3 text-center text-2xl font-black tracking-[0.3em] focus:border-primary/50 outline-none transition-colors"
                 value={joinCode}
                 onChange={(e) => setJoinCode(e.target.value.replace(/\D/g, ''))}
               />
@@ -192,7 +192,7 @@ export default function HomeDashboard() {
               <span className="text-[10px] bg-primary/20 text-primary px-3 py-1 rounded-full uppercase font-bold tracking-wider">Live</span>
             </div>
             
-            <div className="flex flex-col items-center justify-center gap-2 mb-6 p-4 glass bg-black/60 rounded-2xl border border-white/5">
+            <div className="flex flex-col items-center justify-center gap-2 mb-6 p-4 glass bg-foreground/[0.12] rounded-2xl border border-foreground/5">
               <p className="text-xs text-foreground/50 uppercase tracking-widest">Access Code</p>
               <p className="text-6xl font-black text-primary tracking-[0.2em] ml-3">{roomId}</p>
             </div>
@@ -204,11 +204,11 @@ export default function HomeDashboard() {
               <div className="flex-1 flex flex-col justify-center gap-3">
                 <button 
                   onClick={copyToClipboard}
-                  className="glass px-4 py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold hover:bg-white/10 transition-colors"
+                  className="glass px-4 py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold hover:bg-foreground/10 transition-colors"
                 >
                   <Copy className="w-4 h-4" /> {copied ? 'Copied!' : 'Copy Link'}
                 </button>
-                <button className="glass px-4 py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold hover:bg-white/10 transition-colors">
+                <button className="glass px-4 py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold hover:bg-foreground/10 transition-colors">
                   <Share2 className="w-4 h-4" /> Share
                 </button>
               </div>

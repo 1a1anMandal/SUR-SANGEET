@@ -79,11 +79,11 @@ export default function AdminDashboard() {
         <div className="w-24 h-24 bg-red-500/10 rounded-full flex items-center justify-center text-red-500 mb-4">
           <ShieldAlert className="w-12 h-12" />
         </div>
-        <h1 className="text-4xl font-black text-white">Access Denied</h1>
+        <h1 className="text-4xl font-black text-foreground">Access Denied</h1>
         <p className="text-foreground/60 max-w-sm">
           You do not have administrative privileges to view this sanctuary area.
         </p>
-        <button onClick={() => router.push('/home')} className="mt-4 px-8 py-3 bg-white/10 hover:bg-white/20 rounded-xl transition-all font-bold flex items-center gap-2">
+        <button onClick={() => router.push('/home')} className="mt-4 px-8 py-3 bg-foreground/10 hover:bg-foreground/20 rounded-xl transition-all font-bold flex items-center gap-2">
           <ArrowLeft className="w-5 h-5" /> Return Home
         </button>
       </div>
@@ -95,14 +95,14 @@ export default function AdminDashboard() {
       <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-orange-600/10 rounded-full blur-[120px] translate-x-1/3 translate-y-1/3 pointer-events-none" />
 
-      <aside className="w-full md:w-72 bg-black/40 backdrop-blur-2xl border-b md:border-b-0 md:border-r border-white/5 p-6 flex flex-col h-auto md:h-screen sticky top-0 z-10">
+      <aside className="w-full md:w-72 bg-foreground/[0.08] backdrop-blur-2xl border-b md:border-b-0 md:border-r border-foreground/5 p-6 flex flex-col h-auto md:h-screen sticky top-0 z-10">
         <div className="flex items-center justify-between mb-12">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center text-black shadow-lg shadow-primary/20">
               <ShieldAlert className="w-5 h-5 fill-current" />
             </div>
             <div>
-              <h2 className="font-black tracking-wide text-lg leading-none text-white">Admin Hub</h2>
+              <h2 className="font-black tracking-wide text-lg leading-none text-foreground">Admin Hub</h2>
               <span className="text-[10px] uppercase tracking-widest text-primary font-bold">Sur Sangeet</span>
             </div>
           </div>
@@ -112,7 +112,7 @@ export default function AdminDashboard() {
         <nav className="flex md:flex-col gap-3 overflow-x-auto pb-4 md:pb-0 hide-scrollbar">
           <button
             onClick={() => setActiveTab('dashboard')}
-            className={'flex items-center gap-4 px-5 py-4 rounded-2xl transition-all whitespace-nowrap group ' + (activeTab === 'dashboard' ? 'bg-gradient-to-r from-primary/20 to-transparent text-primary font-bold border-l-2 border-primary' : 'text-foreground/70 hover:bg-white/5 hover:text-white')}
+            className={'flex items-center gap-4 px-5 py-4 rounded-2xl transition-all whitespace-nowrap group ' + (activeTab === 'dashboard' ? 'bg-gradient-to-r from-primary/20 to-transparent text-primary font-bold border-l-2 border-primary' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground')}
           >
             <LayoutDashboard className={'w-5 h-5 transition-transform group-hover:scale-110 ' + (activeTab === 'dashboard' ? 'text-primary' : 'text-foreground/50')} /> 
             Overview
@@ -120,25 +120,25 @@ export default function AdminDashboard() {
           
           <button
             onClick={() => setActiveTab('users')}
-            className={'flex items-center gap-4 px-5 py-4 rounded-2xl transition-all whitespace-nowrap group ' + (activeTab === 'users' ? 'bg-gradient-to-r from-primary/20 to-transparent text-primary font-bold border-l-2 border-primary' : 'text-foreground/70 hover:bg-white/5 hover:text-white')}
+            className={'flex items-center gap-4 px-5 py-4 rounded-2xl transition-all whitespace-nowrap group ' + (activeTab === 'users' ? 'bg-gradient-to-r from-primary/20 to-transparent text-primary font-bold border-l-2 border-primary' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground')}
           >
             <Users className={'w-5 h-5 transition-transform group-hover:scale-110 ' + (activeTab === 'users' ? 'text-primary' : 'text-foreground/50')} /> 
             Manage Users
-            <span className="ml-auto bg-white/5 px-2 py-0.5 rounded-full text-[10px]">{usersList.length}</span>
+            <span className="ml-auto bg-foreground/5 px-2 py-0.5 rounded-full text-[10px]">{usersList.length}</span>
           </button>
           
           <button
             onClick={() => setActiveTab('bhajans')}
-            className={'flex items-center gap-4 px-5 py-4 rounded-2xl transition-all whitespace-nowrap group ' + (activeTab === 'bhajans' ? 'bg-gradient-to-r from-primary/20 to-transparent text-primary font-bold border-l-2 border-primary' : 'text-foreground/70 hover:bg-white/5 hover:text-white')}
+            className={'flex items-center gap-4 px-5 py-4 rounded-2xl transition-all whitespace-nowrap group ' + (activeTab === 'bhajans' ? 'bg-gradient-to-r from-primary/20 to-transparent text-primary font-bold border-l-2 border-primary' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground')}
           >
             <Music className={'w-5 h-5 transition-transform group-hover:scale-110 ' + (activeTab === 'bhajans' ? 'text-primary' : 'text-foreground/50')} /> 
             Bhajan Catalog
-            <span className="ml-auto bg-white/5 px-2 py-0.5 rounded-full text-[10px]">{bhajansList.length}</span>
+            <span className="ml-auto bg-foreground/5 px-2 py-0.5 rounded-full text-[10px]">{bhajansList.length}</span>
           </button>
         </nav>
 
-        <div className="mt-auto hidden md:block pt-8 border-t border-white/5">
-          <Link href="/home" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-foreground/50 hover:text-white hover:bg-white/5 transition-all">
+        <div className="mt-auto hidden md:block pt-8 border-t border-foreground/5">
+          <Link href="/home" className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm text-foreground/50 hover:text-foreground hover:bg-foreground/5 transition-all">
             <LogOut className="w-4 h-4" /> Exit Dashboard
           </Link>
         </div>
@@ -148,12 +148,12 @@ export default function AdminDashboard() {
         {activeTab === 'dashboard' && (
           <div className="space-y-8 animate-fade-in max-w-5xl">
             <header className="mb-10">
-              <h1 className="text-4xl font-black text-white mb-2">Welcome, Admin</h1>
+              <h1 className="text-4xl font-black text-foreground mb-2">Welcome, Admin</h1>
               <p className="text-foreground/60">Here is what is happening across Sur Sangeet today.</p>
             </header>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="relative overflow-hidden glass p-8 rounded-[2rem] border border-white/10 group hover:border-primary/50 transition-colors">
+              <div className="relative overflow-hidden glass p-8 rounded-[2rem] border border-foreground/10 group hover:border-primary/50 transition-colors">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-150" />
                 <div className="flex items-center justify-between mb-6 relative z-10">
                   <div className="p-4 bg-blue-500/10 rounded-2xl text-blue-400">
@@ -162,10 +162,10 @@ export default function AdminDashboard() {
                   <span className="text-sm font-bold text-green-400 bg-green-400/10 px-3 py-1 rounded-full">+ Active</span>
                 </div>
                 <h3 className="text-foreground/60 font-medium mb-1 relative z-10">Total Devotees</h3>
-                <p className="text-6xl font-black text-white relative z-10">{usersList.length}</p>
+                <p className="text-6xl font-black text-foreground relative z-10">{usersList.length}</p>
               </div>
 
-              <div className="relative overflow-hidden glass p-8 rounded-[2rem] border border-white/10 group hover:border-primary/50 transition-colors">
+              <div className="relative overflow-hidden glass p-8 rounded-[2rem] border border-foreground/10 group hover:border-primary/50 transition-colors">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-150" />
                 <div className="flex items-center justify-between mb-6 relative z-10">
                   <div className="p-4 bg-primary/10 rounded-2xl text-primary">
@@ -174,7 +174,7 @@ export default function AdminDashboard() {
                   <span className="text-sm font-bold text-green-400 bg-green-400/10 px-3 py-1 rounded-full">+ Growing</span>
                 </div>
                 <h3 className="text-foreground/60 font-medium mb-1 relative z-10">Total Bhajans</h3>
-                <p className="text-6xl font-black text-white relative z-10">{bhajansList.length}</p>
+                <p className="text-6xl font-black text-foreground relative z-10">{bhajansList.length}</p>
               </div>
             </div>
           </div>
@@ -184,15 +184,15 @@ export default function AdminDashboard() {
           <div className="space-y-8 animate-fade-in max-w-6xl">
             <header className="mb-8 flex justify-between items-end">
               <div>
-                <h1 className="text-3xl font-black text-white mb-2">Registered Users</h1>
+                <h1 className="text-3xl font-black text-foreground mb-2">Registered Users</h1>
                 <p className="text-foreground/60">Manage all devotees registered on the platform.</p>
               </div>
             </header>
             
-            <div className="glass rounded-[2rem] border border-white/10 overflow-hidden shadow-2xl">
+            <div className="glass rounded-[2rem] border border-foreground/10 overflow-hidden shadow-2xl">
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
-                  <thead className="bg-white/5 border-b border-white/10">
+                  <thead className="bg-foreground/5 border-b border-foreground/10">
                     <tr>
                       <th className="p-5 font-bold text-xs uppercase tracking-widest text-foreground/50">Devotee</th>
                       <th className="p-5 font-bold text-xs uppercase tracking-widest text-foreground/50">Mobile</th>
@@ -213,14 +213,14 @@ export default function AdminDashboard() {
                               )}
                             </div>
                             <div>
-                              <p className="font-bold text-white group-hover:text-primary transition-colors">{u.name}</p>
+                              <p className="font-bold text-foreground group-hover:text-primary transition-colors">{u.name}</p>
                               <p className="text-xs text-foreground/50">@{u.username}</p>
                             </div>
                           </div>
                         </td>
                         <td className="p-5 text-foreground/70 font-medium">{u.mobile}</td>
                         <td className="p-5 text-right">
-                          <span className={'inline-flex items-center justify-center px-3 py-1 text-xs rounded-full font-bold uppercase tracking-wider border ' + (u.role === 'admin' ? 'bg-primary/10 text-primary border-primary/20 shadow-[0_0_10px_rgba(255,122,0,0.2)]' : 'bg-white/5 text-foreground/60 border-white/10')}>
+                          <span className={'inline-flex items-center justify-center px-3 py-1 text-xs rounded-full font-bold uppercase tracking-wider border ' + (u.role === 'admin' ? 'bg-primary/10 text-primary border-primary/20 shadow-[0_0_10px_rgba(255,122,0,0.2)]' : 'bg-foreground/5 text-foreground/60 border-foreground/10')}>
                             {u.role || 'User'}
                           </span>
                         </td>
@@ -237,25 +237,25 @@ export default function AdminDashboard() {
           <div className="space-y-8 animate-fade-in max-w-7xl">
             <header className="mb-8 flex justify-between items-end">
               <div>
-                <h1 className="text-3xl font-black text-white mb-2">Bhajan Catalog</h1>
+                <h1 className="text-3xl font-black text-foreground mb-2">Bhajan Catalog</h1>
                 <p className="text-foreground/60">Review, approve, and manage community submissions.</p>
               </div>
             </header>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
               {bhajansList.map((bhajan) => (
-                <div key={bhajan.id} className="glass p-6 rounded-[2rem] border border-white/10 flex flex-col group hover:border-primary/30 transition-all hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/5">
+                <div key={bhajan.id} className="glass p-6 rounded-[2rem] border border-foreground/10 flex flex-col group hover:border-primary/30 transition-all hover:-translate-y-1 hover:shadow-2xl hover:shadow-primary/5">
                   <div className="flex-1">
                     <div className="flex justify-between items-start mb-4">
                       <div>
-                        <h3 className="font-black text-xl leading-tight text-white mb-1 group-hover:text-primary transition-colors">{bhajan.title}</h3>
-                        <span className="inline-block px-2 py-1 bg-white/10 rounded-md text-xs font-bold text-foreground/70 uppercase tracking-wider">
+                        <h3 className="font-black text-xl leading-tight text-foreground mb-1 group-hover:text-primary transition-colors">{bhajan.title}</h3>
+                        <span className="inline-block px-2 py-1 bg-foreground/10 rounded-md text-xs font-bold text-foreground/70 uppercase tracking-wider">
                           {bhajan.deity}
                         </span>
                       </div>
                     </div>
                     
-                    <div className="bg-black/40 p-4 rounded-2xl max-h-40 overflow-hidden relative mb-6 border border-white/5">
+                    <div className="bg-foreground/[0.08] p-4 rounded-2xl max-h-40 overflow-hidden relative mb-6 border border-foreground/5">
                       <p className="text-sm text-foreground/70 whitespace-pre-line leading-relaxed font-medium">
                         {Array.isArray(bhajan.lyrics) ? bhajan.lyrics.map(l => l.hindi).join('\n') : ''}
                       </p>
@@ -263,13 +263,13 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                   
-                  <div className="flex gap-3 pt-4 border-t border-white/10">
+                  <div className="flex gap-3 pt-4 border-t border-foreground/10">
                     <div className="flex-1 flex items-center justify-center py-3 rounded-xl bg-green-500/10 text-sm font-bold text-green-400 gap-2 border border-green-500/20">
                       <CheckCircle className="w-4 h-4" /> Live
                     </div>
                     <button 
                       onClick={() => deleteBhajan(bhajan.id)}
-                      className="p-3 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-xl transition-all border border-red-500/20 hover:shadow-[0_0_15px_rgba(239,68,68,0.5)]"
+                      className="p-3 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-foreground rounded-xl transition-all border border-red-500/20 hover:shadow-[0_0_15px_rgba(239,68,68,0.5)]"
                       title="Delete Bhajan"
                     >
                       <Trash2 className="w-5 h-5" />
@@ -279,9 +279,9 @@ export default function AdminDashboard() {
               ))}
               
               {bhajansList.length === 0 && (
-                <div className="col-span-full py-20 text-center glass rounded-[2rem] border border-white/5">
-                  <Music className="w-12 h-12 text-white/20 mx-auto mb-4" />
-                  <h3 className="text-xl font-bold text-white mb-2">No Bhajans Found</h3>
+                <div className="col-span-full py-20 text-center glass rounded-[2rem] border border-foreground/5">
+                  <Music className="w-12 h-12 text-foreground/20 mx-auto mb-4" />
+                  <h3 className="text-xl font-bold text-foreground mb-2">No Bhajans Found</h3>
                   <p className="text-foreground/50">The library is currently empty.</p>
                 </div>
               )}

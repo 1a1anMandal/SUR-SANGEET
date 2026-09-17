@@ -42,7 +42,7 @@ export default function Login() {
       {/* Header */}
       <header className="z-10 flex justify-between items-center mb-10 w-full max-w-sm mx-auto">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-white shadow-[0_0_10px_rgba(255,122,0,0.4)]">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-foreground shadow-[0_0_10px_rgba(255,122,0,0.4)]">
             <Flame className="w-4 h-4 fill-current" />
           </div>
           <span className="font-bold tracking-wide">Sur Sangeet</span>
@@ -63,7 +63,7 @@ export default function Login() {
             <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-2 block ml-1">
               Full Name
             </label>
-            <div className="bg-black/20 rounded-xl flex items-center px-4 py-3 gap-3 border border-white/5 focus-within:border-primary/50 transition-colors">
+            <div className="bg-foreground/[0.05] rounded-xl flex items-center px-4 py-3 gap-3 border border-foreground/5 focus-within:border-primary/50 transition-colors">
               <UserCircle2 className="w-5 h-5 text-primary/60" />
               <input 
                 type="text" 
@@ -79,7 +79,7 @@ export default function Login() {
             <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-2 block ml-1">
               Mobile Number
             </label>
-            <div className="bg-black/20 rounded-xl flex items-center px-4 py-3 gap-3 border border-white/5 focus-within:border-primary/50 transition-colors">
+            <div className="bg-foreground/[0.05] rounded-xl flex items-center px-4 py-3 gap-3 border border-foreground/5 focus-within:border-primary/50 transition-colors">
               <Phone className="w-5 h-5 text-primary/60" />
               <input 
                 type="tel" 
