@@ -165,13 +165,13 @@ export default function HomeDashboard() {
                 type="text" 
                 maxLength={4}
                 placeholder="0000"
-                className="flex-1 bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-center text-2xl font-black tracking-[0.3em] focus:border-primary/50 outline-none transition-colors"
+                className="flex-1 w-0 min-w-0 shrink bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-center text-2xl font-black tracking-[0.3em] focus:border-primary/50 outline-none transition-colors"
                 value={joinCode}
                 onChange={(e) => setJoinCode(e.target.value.replace(/\D/g, ''))}
               />
               <button 
                 type="submit"
-                className="bg-white text-black px-6 rounded-xl font-bold active:scale-95 transition-transform"
+                className="bg-white text-black px-6 rounded-xl font-bold active:scale-95 transition-transform shrink-0"
               >
                 Join
               </button>
@@ -226,4 +226,5 @@ export default function HomeDashboard() {
     </main>
   );
 }
+
 
