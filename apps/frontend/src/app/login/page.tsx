@@ -29,7 +29,7 @@ export default function Login() {
     if (success) {
       router.push('/library'); // Default route after login
     } else {
-      alert('Failed to login. Please try again.');
+      // handled in store
     }
   };
 
@@ -103,3 +103,4 @@ export default function Login() {
     </main>
   );
 }
+

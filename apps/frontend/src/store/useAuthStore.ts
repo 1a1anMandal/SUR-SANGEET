@@ -25,26 +25,7 @@ export const useAuthStore = create<AuthStore>()(
     (set, get) => ({
       user: null,
       favorites: [],
-      login: async (name, mobile) => {
-        // Find existing user by mobile
-        const { data: existingUser } = await supabase.from('users').select('*').eq('mobile', mobile).single();
-        if (existingUser) {
-          set({ user: existingUser });
-          get().fetchFavorites();
-          return true;
-        }
-
-        // Create new user
-        const username = name.toLowerCase().replace(/\s+/g, '') + Math.floor(Math.random() * 1000);
-        const { data: newUser, error } = await supabase.from('users').insert([{ name, username, mobile }]).select().single();
-        
-        if (!error && newUser) {
-          set({ user: newUser });
-          return true;
-        }
-        return false;
-      },
-      updateUser: async (data) => {
+      login: async (name, mobile) => { try { const { data: existingUser, error: findError } = await supabase.from('users').select('*').eq('mobile', mobile).maybeSingle(); if (existingUser) { set({ user: existingUser }); get().fetchFavorites(); return true; } const username = name.toLowerCase().replace(/\\s+/g, '') + Math.floor(Math.random() * 1000); const { data: newUser, error: insertError } = await supabase.from('users').insert([{ name, username, mobile }]).select().single(); if (!insertError && newUser) { set({ user: newUser }); return true; } alert('Insert Error: ' + (insertError?.message || 'Unknown')); return false; } catch (err) { alert('Exception: ' + err.message); return false; } }, updateUser: async (data) => {
         const { user } = get();
         if (!user) return;
         const { error } = await supabase.from('users').update(data).eq('id', user.id);
@@ -80,4 +61,6 @@ export const useAuthStore = create<AuthStore>()(
     }
   )
 );
+
+
 
