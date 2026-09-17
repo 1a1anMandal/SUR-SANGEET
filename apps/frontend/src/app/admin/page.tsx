@@ -7,7 +7,7 @@ import { supabase } from '@/lib/supabase';
 import { Users, Music, LayoutDashboard, Trash2, CheckCircle } from 'lucide-react';
 import ThemeToggle from '@/components/ThemeToggle';
 import Link from 'next/link';
-import { Bhajan } from '@/store/useLibraryStore';
+import { Bhajan } from '@app/shared';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -200,3 +200,4 @@ export default function AdminDashboard() {
     </div>
   );
 }
+
