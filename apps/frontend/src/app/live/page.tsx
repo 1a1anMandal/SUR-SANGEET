@@ -146,7 +146,7 @@ export default function LiveRoom() {
                     "text-center transition-all duration-700 ease-in-out cursor-pointer whitespace-pre-wrap leading-relaxed px-2",
                     isActive 
                       ? "text-[22px] sm:text-[28px] text-foreground font-black scale-100 opacity-100 drop-shadow-md" 
-                      : "text-[13px] sm:text-[15px] text-foreground/30 font-medium scale-90 opacity-40 blur-[0.5px]"
+                      : "text-[14px] sm:text-[16px] text-foreground/60 font-medium scale-95 opacity-100"
                   )}
                   onClick={() => {
                     if (isViewMode) setViewParaIdx(idx);
@@ -267,4 +267,5 @@ export default function LiveRoom() {
     </div>
   );
 }
+
 
