@@ -4,9 +4,7 @@
     "description":  "",
     "main":  "index.js",
     "scripts":  {
-                    "test":  "echo \"Error: no test specified\" && exit 1",
-                    "build":  "pnpm --filter shared build && pnpm --filter backend build",
-                    "start":  "pnpm --filter backend start"
+                    "test":  "echo \"Error: no test specified\" \u0026\u0026 exit 1"
                 },
     "keywords":  [
 
@@ -26,4 +24,3 @@
                             "concurrently":  "^10.0.5"
                         }
 }
-
