@@ -43,33 +43,7 @@ export default function LiveRoom() {
     }
   }, [activeParagraphIndex, activeBhajan]);
 
-  const handleScroll = () => {
-    if (!isMockLeader && !isViewMode) return;
-    
-    let closestIndex = activeParagraphIndex;
-    let minDistance = Infinity;
-    const center = window.innerHeight / 2;
-
-    lyricsRef.current.forEach((el, idx) => {
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const distance = Math.abs(rect.top + rect.height / 2 - center);
-      if (distance < minDistance) {
-        minDistance = distance;
-        closestIndex = idx;
-      }
-    });
-
-    if (closestIndex !== activeParagraphIndex) {
-      if (isViewMode) {
-        setViewParaIdx(closestIndex);
-      } else {
-        useRoomStore.getState().setParagraph(closestIndex);
-      }
-    }
-  };
-
-  if (!activeBhajan) {
+if (!activeBhajan) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="text-foreground/50">No bhajan selected.</p>
@@ -141,7 +115,7 @@ export default function LiveRoom() {
         {/* Lyrics Scroll Area */}
         <div 
           className="relative z-10 flex-1 overflow-y-auto no-scrollbar px-6 scroll-smooth pb-32"
-          onScroll={handleScroll}
+          
         >
           <div className="space-y-6 pt-[30vh] pb-[50vh]">
             {activeBhajan.lyrics.map((paragraph, idx) => {
@@ -276,6 +250,7 @@ export default function LiveRoom() {
     </div>
   );
 }
+
 
 
 

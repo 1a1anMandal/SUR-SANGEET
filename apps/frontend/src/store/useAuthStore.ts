@@ -50,12 +50,17 @@ export const useAuthStore = create<AuthStore>()(
       updateUser: async (data) => {
         const { user } = get();
         if (!user) return false;
-        const { error } = await supabase.from('users').update(data).eq('id', user.id);
-        if (!error) {
-          set((state) => ({ user: state.user ? { ...state.user, ...data } : null }));
+        
+        try {
+          const { error } = await supabase.from('users').update(data).eq('id', user.id);
+          if (error) {
+            alert('Update Failed: ' + error.message);
+            return false;
+          }
+          set({ user: { ...user, ...data } });
           return true;
-        } else {
-          alert('Failed to update profile: ' + error.message);
+        } catch (err: any) {
+          alert('Error: ' + err.message);
           return false;
         }
       },
@@ -63,8 +68,8 @@ export const useAuthStore = create<AuthStore>()(
       fetchFavorites: async () => {
         const { user } = get();
         if (!user) return;
-        const { data } = await supabase.from('favorites').select('bhajan_id').eq('user_id', user.id);
-        if (data) {
+        const { data, error } = await supabase.from('favorites').select('bhajan_id').eq('user_id', user.id);
+        if (!error && data) {
           set({ favorites: data.map(f => f.bhajan_id) });
         }
       },
