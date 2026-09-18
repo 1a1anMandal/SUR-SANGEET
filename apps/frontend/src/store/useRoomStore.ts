@@ -7,6 +7,7 @@ import { RealtimeChannel } from '@supabase/supabase-js';
 interface RoomStore {
   roomId: string;
   leaderId: string;
+  coLeaders: string[];
   currentBhajanId: string | null;
   activeParagraphIndex: number;
   queue: QueueItem[];
@@ -24,11 +25,14 @@ interface RoomStore {
   _subscribeToRoom: (roomId: string, userId: string, userName: string) => void;
   _fetchAndApplyRoomState: (roomId: string) => Promise<void>;
   _updateDbQueue: (roomId: string, queue: QueueItem[]) => Promise<void>;
+  assignCoLeader: (userId: string) => Promise<void>;
+  removeCoLeader: (userId: string) => Promise<void>;
 }
 
 export const useRoomStore = create<RoomStore>((set, get) => ({
   roomId: '',
   leaderId: '',
+  coLeaders: [],
   currentBhajanId: null,
   activeParagraphIndex: 0,
   queue: [],
@@ -49,6 +53,7 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     set({
       roomId: room.id,
       leaderId: room.leader_id,
+      coLeaders: room.co_leaders || [],
       currentBhajanId: room.current_bhajan_id,
       queue: room.queue || [],
       activeBhajan,
@@ -78,16 +83,26 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
         const room = payload.new;
         const bhajans = useLibraryStore.getState().bhajans;
         const activeBhajan = bhajans.find(b => b.id === room.current_bhajan_id) || null;
+        
+        const isLeader = get().leaderId === userId;
+        const isCoLeader = (room.co_leaders || []).includes(userId);
+        
         set({
           currentBhajanId: room.current_bhajan_id,
           queue: room.queue || [],
-          activeBhajan
+          coLeaders: room.co_leaders || [],
+          activeBhajan,
+          isMockLeader: isLeader || isCoLeader
         });
       })
       .subscribe(async (status) => {
         if (status === 'SUBSCRIBED') {
           const isLeader = get().leaderId === userId;
-          await channel.track({ id: userId, name: userName, role: isLeader ? 'leader' : 'participant' });
+          const isCoLeader = get().coLeaders.includes(userId);
+          let role = 'participant';
+          if (isLeader) role = 'leader';
+          else if (isCoLeader) role = 'co-leader';
+          await channel.track({ id: userId, name: userName, role });
         }
       });
 
@@ -97,12 +112,23 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
   createRoom: async (leaderId, leaderName, bhajanId) => {
     const roomId = Math.floor(1000 + Math.random() * 9000).toString();
     
+    // Auto-queue 10 random bhajans
+    const allBhajans = useLibraryStore.getState().bhajans;
+    const availableBhajans = allBhajans.filter(b => b.id !== bhajanId && b.lyrics && b.lyrics.length > 0);
+    const shuffled = availableBhajans.sort(() => 0.5 - Math.random());
+    const initialQueue = shuffled.slice(0, 10).map(b => ({
+      id: b.id,
+      votes: 0,
+      voters: []
+    }));
+    
     const { error } = await supabase.from('rooms').insert({
       id: roomId,
       leader_id: leaderId,
+      co_leaders: [],
       current_bhajan_id: bhajanId,
       active_paragraph_index: 0,
-      queue: []
+      queue: initialQueue
     });
 
     if (error) {
@@ -206,6 +232,36 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     await get()._updateDbQueue(roomId, newQueue);
   },
 
+  assignCoLeader: async (userId: string) => {
+    const { roomId, coLeaders, leaderId } = get();
+    // Only leader can assign
+    const currentUserId = get().participants.length > 0 ? get().participants.find(p => p.role === 'leader')?.id : null;
+    if (currentUserId !== leaderId || !roomId) return;
+    
+    if (coLeaders.length >= 3) {
+      alert('Maximum 3 co-leaders allowed.');
+      return;
+    }
+
+    if (coLeaders.includes(userId)) return;
+
+    const newCoLeaders = [...coLeaders, userId];
+    set({ coLeaders: newCoLeaders });
+    const { error } = await supabase.from('rooms').update({ co_leaders: newCoLeaders }).eq('id', roomId);
+    if (error) console.error('Error updating co-leaders', error);
+  },
+
+  removeCoLeader: async (userId: string) => {
+    const { roomId, coLeaders, leaderId } = get();
+    const currentUserId = get().participants.length > 0 ? get().participants.find(p => p.role === 'leader')?.id : null;
+    if (currentUserId !== leaderId || !roomId) return;
+    
+    const newCoLeaders = coLeaders.filter(id => id !== userId);
+    set({ coLeaders: newCoLeaders });
+    const { error } = await supabase.from('rooms').update({ co_leaders: newCoLeaders }).eq('id', roomId);
+    if (error) console.error('Error removing co-leader', error);
+  },
+
   leaveRoom: () => {
     const { channel } = get();
     if (channel) {
@@ -214,6 +270,7 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     set({
       roomId: '',
       leaderId: '',
+      coLeaders: [],
       currentBhajanId: null,
       activeParagraphIndex: 0,
       queue: [],

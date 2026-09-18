@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/useAuthStore';
 import { supabase } from '@/lib/supabase';
-import { Users, Music, LayoutDashboard, Trash2, CheckCircle, ShieldAlert, LogOut, Loader2, ArrowLeft } from 'lucide-react';
+import { Users, Music, LayoutDashboard, Trash2, CheckCircle, ShieldAlert, LogOut, Loader2, ArrowLeft, Flame } from 'lucide-react';
 import ThemeToggle from '@/components/ThemeToggle';
 import Link from 'next/link';
 import { Bhajan } from '@app/shared';
@@ -14,9 +14,10 @@ export default function AdminDashboard() {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
   
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'users' | 'bhajans'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'users' | 'bhajans' | 'rooms'>('dashboard');
   const [usersList, setUsersList] = useState<any[]>([]);
   const [bhajansList, setBhajansList] = useState<Bhajan[]>([]);
+  const [roomsList, setRoomsList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState('');
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
@@ -51,8 +52,21 @@ export default function AdminDashboard() {
     
     const { data: bhajansData } = await supabase.from('bhajans').select('*').order('created_at', { ascending: false });
     if (bhajansData) setBhajansList(bhajansData);
+
+    const { data: roomsData } = await supabase.from('rooms').select('*').order('created_at', { ascending: false });
+    if (roomsData) setRoomsList(roomsData);
     
     setLoading(false);
+  };
+
+  const disbandRoom = async (id: string) => {
+    if (!confirm('Are you sure you want to disband this Live Room? It will kick everyone out.')) return;
+    setActionLoading('Disbanding Room...');
+    const { error } = await supabase.from('rooms').delete().eq('id', id);
+    if (!error) {
+      setRoomsList(roomsList.filter(r => r.id !== id));
+    }
+    setActionLoading('');
   };
 
   const deleteBhajan = async (id: string) => {
@@ -145,6 +159,15 @@ export default function AdminDashboard() {
             <Music className={'w-4 h-4 transition-transform group-hover:scale-110 ' + (activeTab === 'bhajans' ? 'text-primary' : 'text-foreground/50')} /> 
             Bhajan Catalog
             <span className="ml-auto bg-foreground/5 px-2 py-0.5 rounded-full text-[9px]">{bhajansList.length}</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('rooms')}
+            className={'flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all whitespace-nowrap group ' + (activeTab === 'rooms' ? 'bg-gradient-to-r from-primary/20 to-transparent text-primary font-bold border-l-2 border-primary' : 'text-foreground/70 hover:bg-foreground/5 hover:text-foreground')}
+          >
+            <Flame className={'w-4 h-4 transition-transform group-hover:scale-110 ' + (activeTab === 'rooms' ? 'text-primary' : 'text-foreground/50')} /> 
+            Live Rooms
+            <span className="ml-auto bg-foreground/5 px-2 py-0.5 rounded-full text-[9px]">{roomsList.length}</span>
           </button>
         </nav>
 
@@ -310,6 +333,68 @@ export default function AdminDashboard() {
             </div>
           </div>
         )}
+        {activeTab === 'rooms' && (
+          <div className="space-y-6 animate-fade-in max-w-6xl mx-auto">
+            <header className="mb-6 flex justify-between items-end">
+              <div>
+                <h1 className="text-2xl font-black text-foreground mb-1">Live Rooms</h1>
+                <p className="text-sm text-foreground/60">Monitor and manage all active sessions.</p>
+              </div>
+            </header>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {roomsList.map((room) => {
+                const b = bhajansList.find(x => x.id === room.current_bhajan_id);
+                return (
+                  <div key={room.id} className="glass p-5 rounded-2xl border border-foreground/10 flex flex-col group relative overflow-hidden shadow-lg">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full blur-xl -mr-8 -mt-8 pointer-events-none" />
+                    
+                    <div className="flex justify-between items-center mb-4 relative z-10">
+                      <span className="text-2xl font-black text-primary tracking-[0.2em]">{room.id}</span>
+                      <span className="px-2 py-1 bg-green-500/10 text-green-500 text-[10px] font-bold uppercase tracking-widest rounded-md flex items-center gap-1 border border-green-500/20">
+                        <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" /> Live
+                      </span>
+                    </div>
+
+                    <div className="mb-4 relative z-10 flex-1">
+                      <p className="text-[10px] uppercase tracking-widest text-foreground/50 font-bold mb-1">Now Playing</p>
+                      <p className="font-bold text-foreground text-sm truncate">{b?.title || 'Unknown'}</p>
+                    </div>
+
+                    <div className="flex gap-2 relative z-10">
+                      <button 
+                        onClick={async () => {
+                          const { useRoomStore } = await import('@/store/useRoomStore');
+                          const success = await useRoomStore.getState().joinRoom(room.id, user!.id, user!.name);
+                          if(success) router.push('/live');
+                        }}
+                        className="flex-1 flex items-center justify-center gap-2 bg-primary/10 hover:bg-primary/20 text-primary py-2 rounded-xl text-sm font-bold transition-colors border border-primary/20"
+                      >
+                        <LogOut className="w-4 h-4" /> Join 
+                      </button>
+                      <button 
+                        onClick={() => disbandRoom(room.id)}
+                        className="flex items-center justify-center p-2 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-xl transition-all border border-red-500/20"
+                        title="Disband Room"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+              
+              {roomsList.length === 0 && (
+                <div className="col-span-full py-16 text-center glass rounded-2xl border border-foreground/5">
+                  <Flame className="w-10 h-10 text-foreground/20 mx-auto mb-3" />
+                  <h3 className="text-lg font-bold text-foreground mb-1">No Active Rooms</h3>
+                  <p className="text-sm text-foreground/50">There are no live sessions running right now.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
       </main>
     </div>
   );

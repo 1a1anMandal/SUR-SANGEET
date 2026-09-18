@@ -26,10 +26,11 @@ export default function HomeDashboard() {
   const [isCreating, setIsCreating] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
 
-  const categories = ['All', ...Array.from(new Set(bhajans.map(b => b.deity)))];
+  const validBhajans = bhajans.filter(b => b.lyrics && b.lyrics.length > 0);
+  const categories = ['All', ...Array.from(new Set(validBhajans.map(b => b.deity)))].filter(Boolean);
 
-  const filteredBhajans = bhajans.filter(b => {
-    const matchesSearch = b.title.toLowerCase().includes(searchQuery.toLowerCase()) || b.deity.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredBhajans = validBhajans.filter(b => {
+    const matchesSearch = b.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = activeCategory === 'All' || b.deity === activeCategory;
     return matchesSearch && matchesCategory;
   });
@@ -47,15 +48,16 @@ export default function HomeDashboard() {
   const handleJoinSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
-    if (joinCode.length === 4) {
-      setIsJoining(true);
-      const success = await joinRoom(joinCode, user.id, user.name);
-      setIsJoining(false);
-      if (success) {
-        router.push('/live');
-      } else {
-        alert('Invalid Room Code or Room not found');
-      }
+    if (joinCode.length !== 4) {
+      alert('Please enter a valid 4-digit code');
+      return;
+    }
+    
+    setIsJoining(true);
+    const success = await joinRoom(joinCode, user.id, user.name);
+    setIsJoining(false);
+    if (success) {
+      router.push('/live');
     }
   };
 

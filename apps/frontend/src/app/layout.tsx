@@ -21,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} antialiased bg-black`}>
+      <body className={`${inter.variable} antialiased bg-black overflow-x-hidden`}>
         <ThemeProvider>
           <AuthGuard>
             <DataFetcher />

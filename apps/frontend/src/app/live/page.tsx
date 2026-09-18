@@ -6,9 +6,10 @@ import { useRoomStore } from '@/store/useRoomStore';
 import { useLibraryStore } from '@/store/useLibraryStore';
 import { ChevronLeft, Flame, MoreVertical, Music2, ArrowUp, Users, Menu, Search } from 'lucide-react';
 import { useUIStore } from '@/store/useUIStore';
-import { cn } from '@/components/Navigation/BottomNav';
-import { User } from '@app/shared';
+import { cn } from '@/lib/utils';
 import ThemeToggle from '@/components/ThemeToggle';
+import QueueSheet from '@/components/LiveRoom/QueueSheet';
+import MembersOverlay from '@/components/LiveRoom/MembersOverlay';
 
 export default function LiveRoom() {
   const router = useRouter();
@@ -171,40 +172,12 @@ if (!activeBhajan) {
       </header>
 
       <main className="flex-1 flex flex-col relative overflow-hidden">
-        {/* Title & Search Area */}
+        {/* Title Area */}
         <div className="text-center mt-2 mb-8 relative z-10 animate-fade-in px-4">
           <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-primary mb-2 flex items-center justify-center gap-2">
             <span className="text-orange-500">?</span> {activeBhajan.deity} BHAJAN
           </p>
-          <h2 className="text-3xl font-black text-primary text-glow mb-6">{activeBhajan.title}</h2>
-          
-          <div className="relative max-w-sm mx-auto z-50">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/40" />
-            <input 
-              type="text" 
-              placeholder="Search bhajans to sing..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-foreground/5 border border-foreground/10 rounded-full py-3 pl-10 pr-4 text-sm focus:outline-none focus:border-primary/50 transition-colors"
-            />
-            {searchQuery && searchResults.length > 0 && (
-              <div className="absolute top-full left-0 w-full mt-2 bg-background/95 backdrop-blur-xl border border-foreground/10 rounded-2xl p-2 shadow-2xl z-50 max-h-48 overflow-y-auto text-left">
-                {searchResults.map(b => (
-                  <button 
-                    key={b.id} 
-                    onClick={() => {
-                      setSearchQuery('');
-                      if (isViewMode) router.push(`/live?viewLyrics=${b.id}`);
-                      else useRoomStore.getState().addToQueue(b.id);
-                    }}
-                    className="w-full p-3 hover:bg-foreground/5 rounded-xl text-sm font-bold truncate text-left"
-                  >
-                    {b.title}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          <h2 className="text-3xl font-black text-primary text-glow mb-2">{activeBhajan.title}</h2>
         </div>
 
         {/* Center Orange Gradient Focus Area */}
@@ -218,7 +191,7 @@ if (!activeBhajan) {
           onWheel={handleUserInteraction}
           onTouchMove={handleUserInteraction}
         >
-          <div className="space-y-6 pt-[30vh] pb-[50vh]">
+          <div className="space-y-6 pt-[50vh] pb-[70vh]">
             {activeBhajan.lyrics.map((paragraph, idx) => {
               const isActive = idx === activeParagraphIndex;
               
@@ -308,69 +281,11 @@ if (!activeBhajan) {
       {/* Overlays (Queue & Members) */}
       {!isViewMode && (
         <>
-          {/* Queue Sheet Overlay */}
-          <div 
-            className={cn(
-              "absolute bottom-0 left-0 w-full h-[85vh] glass bg-background/95 backdrop-blur-2xl rounded-t-[2.5rem] z-[100] transition-transform duration-500 ease-out border-t border-foreground/10 flex flex-col shadow-[0_-20px_50px_rgba(0,0,0,0.5)]",
-              isQueueSheetOpen ? "translate-y-0" : "translate-y-full"
-            )}
-          >
-            <div className="w-12 h-1.5 bg-foreground/20 rounded-full mx-auto mt-4 mb-6" />
-            
-            <div className="px-6 flex justify-between items-center mb-6">
-              <h3 className="text-xl font-black text-foreground">Live Queue</h3>
-              <button onClick={() => setQueueSheetOpen(false)} className="text-sm font-bold text-primary bg-primary/10 px-4 py-2 rounded-full">
-                Close
-              </button>
-            </div>
-
-            <div className="flex-1 overflow-y-auto px-6 space-y-4 pb-10">
-              {queue.map((q, idx) => {
-                const b = bhajans.find(x => x.id === q.id);
-                if (!b) return null;
-                return (
-                  <div key={q.id} className="flex items-center justify-between glass p-4 rounded-2xl border-foreground/5 bg-foreground/[0.02]">
-                    <div className="flex items-center gap-4">
-                      <span className="text-foreground/30 font-black text-lg w-4">{idx + 1}</span>
-                      <span className="font-bold text-sm">{b.title}</span>
-                    </div>
-                    <button 
-                      onClick={() => useRoomStore.getState().voteQueue(q.id)}
-                      className="flex items-center gap-1 bg-foreground/10 px-3 py-1.5 rounded-full"
-                    >
-                      <ArrowUp className="w-3 h-3 text-primary" />
-                      <span className="text-xs font-bold">{q.votes}</span>
-                    </button>
-                  </div>
-                );
-              })}
-              {queue.length === 0 && (
-                <p className="text-center text-foreground/40 mt-10 text-sm">No bhajans in queue.</p>
-              )}
-            </div>
-          </div>
+          <QueueSheet />
 
           {/* Members Overlay */}
           {showMembers && (
-            <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-[100] flex items-center justify-center p-6">
-              <div className="glass w-full max-w-sm rounded-3xl p-6 shadow-2xl border-foreground/10">
-                <h3 className="text-xl font-black mb-4">Live Devotees</h3>
-                <div className="space-y-3 max-h-[50vh] overflow-y-auto">
-                  {participants.map((p, idx) => (
-                    <div key={idx} className="flex items-center gap-3 bg-foreground/[0.03] p-3 rounded-xl">
-                      <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center text-primary font-bold text-sm">
-                        {p.name?.charAt(0).toUpperCase()}
-                      </div>
-                      <div>
-                        <p className="font-bold text-sm">{p.name}</p>
-                        {p.id === roomId && <p className="text-[10px] text-primary">Leader</p>}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <button onClick={() => setShowMembers(false)} className="mt-6 w-full py-3 bg-foreground/10 rounded-xl font-bold">Close</button>
-              </div>
-            </div>
+            <MembersOverlay onClose={() => setShowMembers(false)} />
           )}
         </>
       )}

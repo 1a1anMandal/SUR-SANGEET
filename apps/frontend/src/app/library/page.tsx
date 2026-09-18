@@ -24,15 +24,6 @@ export default function Library() {
     bhajans = bhajans.filter(b => b.deity.toLowerCase() === activeCategory.toLowerCase());
   }
 
-  const handleAddToQueue = (id: string) => {
-    addToQueue(id);
-    if (!roomId) {
-      alert('You need to join or create a room first to add to queue.');
-    } else {
-      alert('Added to queue!');
-    }
-  };
-
   const mostPlayed = allBhajans.slice(0, 4);
 
   return (
@@ -142,18 +133,12 @@ export default function Library() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3">
               <button 
                 onClick={() => router.push(`/live?viewLyrics=${bhajan.id}`)}
                 className="glass py-2 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:bg-foreground/10"
               >
                 <Music2 className="w-4 h-4" /> View Lyrics
-              </button>
-              <button 
-                onClick={() => handleAddToQueue(bhajan.id)}
-                className="bg-primary/10 text-primary py-2 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-primary/20"
-              >
-                <Plus className="w-4 h-4" /> Add to Queue
               </button>
             </div>
           </div>
