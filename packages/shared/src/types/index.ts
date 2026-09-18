@@ -20,6 +20,7 @@ export interface User {
 export interface QueueItem {
   id: string; // Bhajan ID
   votes: number;
+  voters: string[];
 }
 
 export interface RoomState {

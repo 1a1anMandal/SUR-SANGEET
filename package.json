@@ -5,8 +5,7 @@
     "main":  "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "node apps/backend/dist/index.js",
-        "build": "pnpm --filter @app/shared build && pnpm --filter backend build"
+        "build": "pnpm --filter @app/shared build"
     },
     "keywords":  [
 

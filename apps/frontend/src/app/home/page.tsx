@@ -11,7 +11,7 @@ import FullScreenLoader from '@/components/FullScreenLoader';
 
 export default function HomeDashboard() {
   const router = useRouter();
-  const { createRoom, joinRoom, roomId, initSocket } = useRoomStore();
+  const { createRoom, joinRoom, roomId } = useRoomStore();
   const user = useAuthStore(state => state.user);
   const bhajans = useLibraryStore(state => state.bhajans);
   
@@ -25,11 +25,6 @@ export default function HomeDashboard() {
   const [startingBhajan, setStartingBhajan] = useState(bhajans.length > 0 ? bhajans[0].id : '');
   const [isCreating, setIsCreating] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
-
-  // Eagerly initialize socket to wake up backend (Railway) from sleep
-  useEffect(() => {
-    initSocket();
-  }, [initSocket]);
 
   const categories = ['All', ...Array.from(new Set(bhajans.map(b => b.deity)))];
 

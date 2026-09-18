@@ -12,15 +12,10 @@ import FullScreenLoader from '@/components/FullScreenLoader';
 export default function Login() {
   const router = useRouter();
   const login = useAuthStore(state => state.login);
-  const initSocket = useRoomStore(state => state.initSocket);
   
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    initSocket();
-  }, [initSocket]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

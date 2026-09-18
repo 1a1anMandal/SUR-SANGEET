@@ -1,7 +1,8 @@
 import { create } from 'zustand';
-import { io, Socket } from 'socket.io-client';
 import { QueueItem, Bhajan } from '@app/shared';
 import { useLibraryStore } from './useLibraryStore';
+import { supabase } from '@/lib/supabase';
+import { RealtimeChannel } from '@supabase/supabase-js';
 
 interface RoomStore {
   roomId: string;
@@ -10,10 +11,9 @@ interface RoomStore {
   activeParagraphIndex: number;
   queue: QueueItem[];
   participants: any[];
-  socket: Socket | null;
+  channel: RealtimeChannel | null;
   activeBhajan: Bhajan | null;
   isMockLeader: boolean;
-  initSocket: () => void;
   createRoom: (leaderId: string, leaderName: string, bhajanId: string) => Promise<string>;
   joinRoom: (roomId: string, userId: string, name: string) => Promise<boolean>;
   setParagraph: (index: number) => void;
@@ -21,6 +21,9 @@ interface RoomStore {
   voteQueue: (bhajanId: string) => void;
   reorderQueue: (newQueue: QueueItem[]) => void;
   leaveRoom: () => void;
+  _subscribeToRoom: (roomId: string, userId: string, userName: string) => void;
+  _fetchAndApplyRoomState: (roomId: string) => Promise<void>;
+  _updateDbQueue: (roomId: string, queue: QueueItem[]) => Promise<void>;
 }
 
 export const useRoomStore = create<RoomStore>((set, get) => ({
@@ -31,117 +34,182 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
   queue: [],
   participants: [],
   activeBhajan: null,
-  socket: null,
+  channel: null,
   isMockLeader: false,
 
-  initSocket: () => {
-    if (get().socket) return;
+  _fetchAndApplyRoomState: async (roomId: string) => {
+    const { data: room, error } = await supabase.from('rooms').select('*').eq('id', roomId).single();
+    if (error || !room) {
+      console.error('Failed to fetch room state', error);
+      return;
+    }
+    const bhajans = useLibraryStore.getState().bhajans;
+    const activeBhajan = bhajans.find(b => b.id === room.current_bhajan_id) || null;
     
-    // Auto-detect production URL if env var is missing
-    const isLocal = typeof window !== 'undefined' && window.location.hostname === 'localhost';
-    const fallbackUrl = isLocal ? 'http://localhost:3001' : 'https://sur-sangeet-production.up.railway.app';
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || fallbackUrl;
-    
-    console.log('Connecting to Live Server:', socketUrl);
-    
-    const socket = io(socketUrl, {
-      reconnectionAttempts: 5,
-      timeout: 30000,
-    });
-    
-    socket.on('room_updated', (room) => {
-      const bhajans = useLibraryStore.getState().bhajans;
-      const activeBhajan = bhajans.find(b => b.id === room.currentBhajanId) || null;
-      set({ ...room, activeBhajan });
-    });
-
-    socket.on('disconnect', () => {
-      console.log('Socket disconnected');
-    });
-
-    set({ socket });
-  },
-
-  createRoom: (leaderId, leaderName, bhajanId) => {
-    return new Promise((resolve) => {
-      get().initSocket();
-      const socket = get().socket!;
-      const roomId = Math.floor(1000 + Math.random() * 9000).toString();
-      
-      const timeout = setTimeout(() => {
-        alert('Live Server took too long to wake up (30s). Please check your NEXT_PUBLIC_SOCKET_URL in Vercel or try again.');
-        resolve('');
-      }, 30000); // 20 second timeout for cold starts
-
-      socket.emit('create_room', { leaderId, leaderName, bhajanId, roomId }, (res: any) => {
-        clearTimeout(timeout);
-        if (res?.success) {
-          const bhajans = useLibraryStore.getState().bhajans;
-          const activeBhajan = bhajans.find(b => b.id === bhajanId) || null;
-          set({ ...res.room, activeBhajan, isMockLeader: true, roomId });
-          resolve(roomId);
-        } else {
-          alert('Failed to create room on server.');
-          resolve('');
-        }
-      });
+    set({
+      roomId: room.id,
+      leaderId: room.leader_id,
+      currentBhajanId: room.current_bhajan_id,
+      queue: room.queue || [],
+      activeBhajan,
     });
   },
 
-  joinRoom: (roomId, userId, name) => {
-    return new Promise((resolve) => {
-      get().initSocket();
-      const socket = get().socket!;
-      
-      const timeout = setTimeout(() => {
-        alert('Live Server took too long to wake up. Please try again.');
-        resolve(false);
-      }, 30000);
+  _subscribeToRoom: (roomId: string, userId: string, userName: string) => {
+    const currentChannel = get().channel;
+    if (currentChannel) {
+      supabase.removeChannel(currentChannel);
+    }
 
-      socket.emit('join_room', { roomId, userId, name }, (res: any) => {
-        clearTimeout(timeout);
-        if (res?.success) {
-          const bhajans = useLibraryStore.getState().bhajans;
-          const activeBhajan = bhajans.find(b => b.id === res.room.currentBhajanId) || null;
-          const isLeader = res.room.leaderId === userId;
-          set({ ...res.room, activeBhajan, isMockLeader: isLeader, roomId });
-          resolve(true);
-        } else {
-          resolve(false);
+    const channel = supabase.channel(`room:${roomId}`, {
+      config: { presence: { key: userId } }
+    });
+
+    channel
+      .on('presence', { event: 'sync' }, () => {
+        const state = channel.presenceState();
+        const participants = Object.values(state).map((p: any) => p[0]);
+        set({ participants });
+      })
+      .on('broadcast', { event: 'scroll' }, ({ payload }) => {
+        set({ activeParagraphIndex: payload.index });
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'rooms', filter: `id=eq.${roomId}` }, (payload) => {
+        const room = payload.new;
+        const bhajans = useLibraryStore.getState().bhajans;
+        const activeBhajan = bhajans.find(b => b.id === room.current_bhajan_id) || null;
+        set({
+          currentBhajanId: room.current_bhajan_id,
+          queue: room.queue || [],
+          activeBhajan
+        });
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          const isLeader = get().leaderId === userId;
+          await channel.track({ id: userId, name: userName, role: isLeader ? 'leader' : 'participant' });
         }
       });
+
+    set({ channel });
+  },
+
+  createRoom: async (leaderId, leaderName, bhajanId) => {
+    const roomId = Math.floor(1000 + Math.random() * 9000).toString();
+    
+    const { error } = await supabase.from('rooms').insert({
+      id: roomId,
+      leader_id: leaderId,
+      current_bhajan_id: bhajanId,
+      active_paragraph_index: 0,
+      queue: []
     });
+
+    if (error) {
+      alert('Failed to create room in database. Please ensure you ran the provided SQL script in Supabase.');
+      console.error(error);
+      return '';
+    }
+
+    await get()._fetchAndApplyRoomState(roomId);
+    set({ isMockLeader: true });
+    get()._subscribeToRoom(roomId, leaderId, leaderName);
+    
+    return roomId;
+  },
+
+  joinRoom: async (roomId, userId, name) => {
+    // Only fetch rooms created in the last 3 hours
+    const threeHoursAgo = new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString();
+    
+    const { data: room, error } = await supabase
+      .from('rooms')
+      .select('*')
+      .eq('id', roomId)
+      .gte('created_at', threeHoursAgo)
+      .single();
+
+    if (error || !room) {
+      alert('Room not found or has expired.');
+      return false;
+    }
+
+    await get()._fetchAndApplyRoomState(roomId);
+    const isLeader = room.leader_id === userId;
+    set({ isMockLeader: isLeader });
+    get()._subscribeToRoom(roomId, userId, name);
+
+    return true;
   },
 
   setParagraph: (index) => {
-    const { socket, roomId, isMockLeader } = get();
-    if (!isMockLeader || !socket || !roomId) return;
-    socket.emit('update_lyrics_index', { roomId, index });
+    const { channel, isMockLeader } = get();
+    if (!isMockLeader || !channel) return;
+    
+    // Broadcast for low latency sync
+    channel.send({
+      type: 'broadcast',
+      event: 'scroll',
+      payload: { index }
+    });
+    
+    // Also update local state instantly for leader
+    set({ activeParagraphIndex: index });
   },
 
-  addToQueue: (bhajanId) => {
-    const { socket, roomId } = get();
-    if (!socket || !roomId) return;
-    socket.emit('add_to_queue', { roomId, bhajanId });
+  _updateDbQueue: async (roomId: string, queue: QueueItem[]) => {
+    const { error } = await supabase.from('rooms').update({ queue }).eq('id', roomId);
+    if (error) console.error('Failed to update DB queue', error);
   },
 
-  voteQueue: (bhajanId) => {
-    const { socket, roomId, participants } = get();
-    if (!socket || !roomId) return;
+  addToQueue: async (bhajanId) => {
+    const { roomId, queue } = get();
+    if (!roomId) return;
+    
+    const existing = queue.find(q => q.id === bhajanId);
+    if (existing) return;
+
+    const newQueue = [...queue, { id: bhajanId, votes: 0, voters: [] }];
+    // Optimistic update
+    set({ queue: newQueue });
+    
+    await get()._updateDbQueue(roomId, newQueue);
+  },
+
+  voteQueue: async (bhajanId) => {
+    const { roomId, queue, participants } = get();
+    if (!roomId) return;
+    
     const userId = participants.length > 0 ? participants[0].id : 'anonymous';
-    socket.emit('vote_queue', { roomId, bhajanId, userId });
+    
+    const newQueue = queue.map(q => {
+      if (q.id === bhajanId) {
+        const hasVoted = q.voters.includes(userId);
+        return {
+          ...q,
+          votes: hasVoted ? q.votes - 1 : q.votes + 1,
+          voters: hasVoted ? q.voters.filter(v => v !== userId) : [...q.voters, userId]
+        };
+      }
+      return q;
+    }).sort((a, b) => b.votes - a.votes);
+
+    set({ queue: newQueue });
+    await get()._updateDbQueue(roomId, newQueue);
   },
 
-  reorderQueue: (newQueue) => {
-    const { socket, roomId, isMockLeader } = get();
-    if (!isMockLeader || !socket || !roomId) return;
-    socket.emit('reorder_queue', { roomId, queue: newQueue });
+  reorderQueue: async (newQueue) => {
+    const { roomId, isMockLeader } = get();
+    if (!isMockLeader || !roomId) return;
+    
+    set({ queue: newQueue });
+    await get()._updateDbQueue(roomId, newQueue);
   },
 
   leaveRoom: () => {
-    const { socket, roomId } = get();
-    if (socket && roomId) {
-      socket.emit('leave_room', { roomId });
+    const { channel } = get();
+    if (channel) {
+      supabase.removeChannel(channel);
     }
     set({
       roomId: '',
@@ -151,6 +219,7 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
       queue: [],
       participants: [],
       activeBhajan: null,
+      channel: null,
       isMockLeader: false
     });
   }
