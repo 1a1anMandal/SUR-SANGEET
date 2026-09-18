@@ -31,7 +31,13 @@ export default function Login() {
     setIsLoading(true);
     const success = await login(name, mobile);
     if (success) {
-      router.push('/library'); 
+      const pendingJoin = sessionStorage.getItem('pendingJoinRoom');
+      if (pendingJoin) {
+        sessionStorage.removeItem('pendingJoinRoom');
+        router.push(`/join/${pendingJoin}`);
+      } else {
+        router.push('/home'); 
+      }
     } else {
       setIsLoading(false);
       alert('Login failed. Please try again.');

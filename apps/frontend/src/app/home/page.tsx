@@ -6,6 +6,7 @@ import { useRoomStore } from '@/store/useRoomStore';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useLibraryStore } from '@/store/useLibraryStore';
 import { Mic2, Users, Search, Play, Copy, Check, Loader2 } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import ThemeToggle from '@/components/ThemeToggle';
 import FullScreenLoader from '@/components/FullScreenLoader';
 
@@ -96,9 +97,13 @@ export default function HomeDashboard() {
               <Mic2 className="w-8 h-8 text-primary" />
             </div>
             <h2 className="text-2xl font-black mb-2 text-foreground">Room Created!</h2>
-            <p className="text-foreground/60 mb-6 font-medium">Your sanctuary is ready. Share the code below.</p>
+            <p className="text-foreground/60 mb-4 font-medium">Your sanctuary is ready. Share the code or scan the QR below.</p>
             
-            <div className="bg-foreground/[0.12] rounded-2xl p-6 mb-6 inline-block w-full max-w-[250px] border border-foreground/10">
+            <div className="bg-white p-4 rounded-2xl inline-block mb-4 shadow-lg">
+              <QRCodeSVG value={shareUrl} size={150} fgColor="#000" bgColor="#fff" />
+            </div>
+
+            <div className="bg-foreground/[0.12] rounded-2xl p-6 mb-6 inline-block w-full max-w-[250px] border border-foreground/10 mx-auto block">
               <span className="text-[10px] uppercase tracking-widest text-foreground/40 font-bold mb-2 block">Access Code</span>
               <span className="text-5xl font-black tracking-widest text-primary text-glow">{roomId}</span>
             </div>

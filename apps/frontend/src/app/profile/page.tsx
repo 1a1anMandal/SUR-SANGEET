@@ -4,7 +4,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { useLibraryStore } from '@/store/useLibraryStore';
 import { useRouter } from 'next/navigation';
 import { useState, useRef } from 'react';
-import { UserCircle2, Phone, LogOut, Edit2, Heart, Music2, Flame, Check, Camera, Loader2 } from 'lucide-react';
+import { UserCircle2, Phone, LogOut, Edit2, Heart, Music2, Flame, Check, Camera, Loader2, Info, ChevronLeft } from 'lucide-react';
 import ThemeToggle from '@/components/ThemeToggle';
 import FullScreenLoader from '@/components/FullScreenLoader';
 
@@ -200,6 +200,19 @@ export default function Profile() {
             </div>
           )}
         </div>
+
+        <button 
+          onClick={() => router.push('/about')}
+          className="w-full mt-6 glass flex items-center justify-between p-4 rounded-2xl hover:bg-foreground/5 transition-colors group"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+              <Info className="w-5 h-5" />
+            </div>
+            <span className="font-bold">About Sur Sangeet</span>
+          </div>
+          <ChevronLeft className="w-5 h-5 text-foreground/40 group-hover:text-primary transition-colors rotate-180" />
+        </button>
 
         <button 
           onClick={handleLogout}

@@ -215,31 +215,30 @@ if (!activeBhajan) {
               );
             })}
 
-            {/* Random Suggestions */}
-            <div className="mt-10 mb-32 px-4 animate-fade-in relative z-20">
-              <div className="w-12 h-1 bg-foreground/10 rounded-full mx-auto mb-8" />
-              <h3 className="text-center font-bold text-foreground/50 mb-4 text-sm tracking-widest uppercase">You Might Also Like</h3>
-              <div className="flex flex-col gap-3 max-w-sm mx-auto pb-20">
-                  {randomSuggestions.map(b => (
-                    <button 
-                      key={b.id} 
-                      onClick={() => {
-                        if (isViewMode) router.push(`/live?viewLyrics=${b.id}`);
-                        else useRoomStore.getState().addToQueue(b.id);
-                      }}
-                      className="flex items-center gap-4 p-4 glass bg-foreground/[0.02] rounded-2xl hover:bg-foreground/5 transition-colors border border-foreground/5 w-full text-left"
-                    >
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                        <Music2 className="w-4 h-4" />
-                      </div>
-                      <div className="overflow-hidden">
-                        <p className="font-bold text-sm truncate">{b.title}</p>
-                        <p className="text-[10px] text-foreground/50 uppercase tracking-widest">{b.deity}</p>
-                      </div>
-                    </button>
-                  ))}
+            {/* Random Suggestions (Only in View Mode) */}
+            {isViewMode && (
+              <div className="mt-10 mb-32 px-4 animate-fade-in relative z-20">
+                <div className="w-12 h-1 bg-foreground/10 rounded-full mx-auto mb-8" />
+                <h3 className="text-center font-bold text-foreground/50 mb-4 text-sm tracking-widest uppercase">You Might Also Like</h3>
+                <div className="flex flex-col gap-3 max-w-sm mx-auto pb-20">
+                    {randomSuggestions.map(b => (
+                      <button 
+                        key={b.id} 
+                        onClick={() => router.push(`/live?viewLyrics=${b.id}`)}
+                        className="flex items-center gap-4 p-4 glass bg-foreground/[0.02] rounded-2xl hover:bg-foreground/5 transition-colors border border-foreground/5 w-full text-left"
+                      >
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                          <Music2 className="w-4 h-4" />
+                        </div>
+                        <div className="overflow-hidden">
+                          <p className="font-bold text-sm truncate">{b.title}</p>
+                          <p className="text-[10px] text-foreground/50 uppercase tracking-widest">{b.deity}</p>
+                        </div>
+                      </button>
+                    ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
 
