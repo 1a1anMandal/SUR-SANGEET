@@ -3,9 +3,11 @@
     "version":  "1.0.0",
     "description":  "",
     "main":  "index.js",
-    "scripts":  {
-                    "test":  "echo \"Error: no test specified\" \u0026\u0026 exit 1"
-                },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node apps/backend/dist/index.js",
+        "build": "pnpm --filter @app/shared build && pnpm --filter backend build"
+    },
     "keywords":  [
 
                  ],

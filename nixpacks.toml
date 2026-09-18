@@ -10,5 +10,4 @@ cmds = ["corepack enable pnpm", "pnpm install"]
 [phases.build]
 cmds = ["pnpm --filter @app/shared build", "pnpm --filter backend build"]
 
-[start]
-cmd = "pnpm --filter backend start"
+
