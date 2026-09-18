@@ -41,7 +41,7 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     
     const socket = io(socketUrl, {
       reconnectionAttempts: 5,
-      timeout: 20000,
+      timeout: 45000,
     });
     
     socket.on('room_updated', (room) => {
@@ -64,9 +64,9 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
       const roomId = Math.floor(1000 + Math.random() * 9000).toString();
       
       const timeout = setTimeout(() => {
-        alert('Live Server took too long to wake up (20s). Please check your NEXT_PUBLIC_SOCKET_URL in Vercel or try again.');
+        alert('Live Server took too long to wake up (45s). Please check your NEXT_PUBLIC_SOCKET_URL in Vercel or try again.');
         resolve('');
-      }, 20000); // 20 second timeout for cold starts
+      }, 45000); // 20 second timeout for cold starts
 
       socket.emit('create_room', { leaderId, leaderName, bhajanId, roomId }, (res: any) => {
         clearTimeout(timeout);
@@ -91,7 +91,7 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
       const timeout = setTimeout(() => {
         alert('Live Server took too long to wake up. Please try again.');
         resolve(false);
-      }, 20000);
+      }, 45000);
 
       socket.emit('join_room', { roomId, userId, name }, (res: any) => {
         clearTimeout(timeout);
@@ -150,3 +150,4 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     });
   }
 }));
+

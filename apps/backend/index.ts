@@ -9,6 +9,8 @@ import { QueueItem } from '@app/shared';
 dotenv.config();
 
 const app = express();
+app.get('/', (req, res) => res.send('Backend is alive!'));
+app.get('/health', (req, res) => res.send('OK'));
 app.use(cors());
 
 const httpServer = createServer(app);
@@ -107,5 +109,6 @@ const PORT = process.env.PORT || 3001;
 httpServer.listen(Number(PORT), '0.0.0.0', () => {
   console.log(`Backend server running on port ${PORT}`);
 });
+
 
 
