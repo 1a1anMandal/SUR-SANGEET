@@ -3,12 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, Library, Mic2, User } from 'lucide-react';
-import { clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-
-export function cn(...inputs: (string | undefined | null | false)[]) {
-  return twMerge(clsx(inputs));
-}
+import { cn } from '@/lib/utils';
 
 export default function BottomNav() {
   const pathname = usePathname();

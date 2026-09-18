@@ -4,7 +4,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { useLibraryStore } from '@/store/useLibraryStore';
 import { useRouter } from 'next/navigation';
 import { useState, useRef } from 'react';
-import { UserCircle2, Phone, LogOut, Edit2, Heart, Music2, Flame, Check, Camera, Loader2, Info, ChevronLeft } from 'lucide-react';
+import { UserCircle2, LogOut, Edit2, Heart, Music2, Check, Camera, Loader2, Info, ChevronLeft } from 'lucide-react';
 import ThemeToggle from '@/components/ThemeToggle';
 import FullScreenLoader from '@/components/FullScreenLoader';
 

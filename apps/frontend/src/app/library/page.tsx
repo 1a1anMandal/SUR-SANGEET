@@ -14,7 +14,7 @@ const CATEGORIES = ['All', 'Krishna', 'Ram', 'Shiva', 'Devi', 'Hanuman'];
 export default function Library() {
   const router = useRouter();
   const { searchQuery, setSearchQuery, filteredBhajans, bhajans: allBhajans } = useLibraryStore();
-  const { addToQueue, roomId } = useRoomStore();
+  const { isMockLeader } = useRoomStore();
   const { favorites, toggleFavorite } = useAuthStore();
   
   const [activeCategory, setActiveCategory] = useState('All');

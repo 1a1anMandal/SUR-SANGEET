@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useRoomStore } from '@/store/useRoomStore';
 import { useLibraryStore } from '@/store/useLibraryStore';
-import { ChevronLeft, Flame, MoreVertical, Music2, ArrowUp, Users, Menu, Search } from 'lucide-react';
+import { ChevronLeft, Flame, Music2, Users, Menu } from 'lucide-react';
 import { useUIStore } from '@/store/useUIStore';
 import { cn } from '@/lib/utils';
 import ThemeToggle from '@/components/ThemeToggle';
@@ -17,10 +17,10 @@ export default function LiveRoom() {
   const viewLyricsId = searchParams.get('viewLyrics');
   
   const { 
-    roomId, isMockLeader, activeBhajan: roomBhajan, activeParagraphIndex: roomParaIdx, 
+    isMockLeader, activeBhajan: roomBhajan, activeParagraphIndex: roomParaIdx, 
     queue, participants, leaveRoom
   } = useRoomStore();
-  const { isQueueSheetOpen, setQueueSheetOpen } = useUIStore();
+  const { setQueueSheetOpen } = useUIStore();
   const bhajans = useLibraryStore(state => state.bhajans);
   
   const [showMembers, setShowMembers] = useState(false);
@@ -29,7 +29,6 @@ export default function LiveRoom() {
   const isViewMode = !!viewLyricsId;
   const viewBhajan = bhajans.find(b => b.id === viewLyricsId);
   const [viewParaIdx, setViewParaIdx] = useState(0);
-  const [searchQuery, setSearchQuery] = useState('');
   const [randomSuggestions, setRandomSuggestions] = useState<any[]>([]);
   
   const scrollState = useRef<'IDLE' | 'USER_SCROLLING' | 'PROGRAMMATIC_SCROLLING'>('IDLE');
@@ -51,10 +50,6 @@ export default function LiveRoom() {
     const shuffled = [...others].sort(() => 0.5 - Math.random());
     setRandomSuggestions(shuffled.slice(0, 3));
   }, [viewLyricsId, roomBhajan, bhajans, isViewMode]);
-
-  const searchResults = searchQuery.trim() 
-    ? bhajans.filter(b => b.title.toLowerCase().includes(searchQuery.toLowerCase()) || b.deity.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5)
-    : [];
 
   const handleUserInteraction = () => {
     scrollState.current = 'USER_SCROLLING';

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/useAuthStore';
 import { supabase } from '@/lib/supabase';
-import { Users, Music, LayoutDashboard, Trash2, CheckCircle, ShieldAlert, LogOut, Loader2, ArrowLeft, Flame } from 'lucide-react';
+import { Users, Music, LayoutDashboard, Trash2, CheckCircle, ShieldAlert, LogOut, ArrowLeft, Flame } from 'lucide-react';
 import ThemeToggle from '@/components/ThemeToggle';
 import Link from 'next/link';
 import { Bhajan } from '@app/shared';

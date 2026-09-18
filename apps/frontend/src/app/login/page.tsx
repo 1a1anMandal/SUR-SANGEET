@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/useAuthStore';
-import { useRoomStore } from '@/store/useRoomStore';
 import { Flame, UserCircle2, Phone } from 'lucide-react';
 
 import ThemeToggle from '@/components/ThemeToggle';
