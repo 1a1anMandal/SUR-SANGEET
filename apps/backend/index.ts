@@ -1,4 +1,12 @@
 import express from 'express';
+
+process.on('uncaughtException', (err) => {
+  console.error('FATAL UNCAUGHT EXCEPTION:', err);
+  process.exit(1);
+});
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('FATAL UNHANDLED REJECTION:', reason);
+});
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
