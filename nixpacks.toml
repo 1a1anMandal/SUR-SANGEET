@@ -11,4 +11,4 @@ cmds = ["corepack enable pnpm", "pnpm install"]
 cmds = ["pnpm --filter @app/shared build", "pnpm --filter backend build"]
 
 [start]
-cmd = "pnpm --filter backend start"
+cmd = "cd apps/backend && node dist/index.js"

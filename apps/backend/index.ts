@@ -106,7 +106,7 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3001;
-httpServer.listen(Number(PORT), '0.0.0.0', () => {
+httpServer.listen(Number(PORT), '::', () => {
   console.log(`Backend server running on port ${PORT}`);
 });
 
