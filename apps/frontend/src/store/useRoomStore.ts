@@ -36,7 +36,12 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
 
   initSocket: () => {
     if (get().socket) return;
-    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001';
+    
+    // Auto-detect production URL if env var is missing
+    const isLocal = typeof window !== 'undefined' && window.location.hostname === 'localhost';
+    const fallbackUrl = isLocal ? 'http://localhost:3001' : 'https://sur-sangeet-production.up.railway.app';
+    const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || fallbackUrl;
+    
     console.log('Connecting to Live Server:', socketUrl);
     
     const socket = io(socketUrl, {
