@@ -195,7 +195,7 @@ if (!activeBhajan) {
                     onClick={() => {
                       setSearchQuery('');
                       if (isViewMode) router.push(`/live?viewLyrics=${b.id}`);
-                      else useRoomStore.getState().addBhajanToQueue(b.id);
+                      else useRoomStore.getState().addToQueue(b.id);
                     }}
                     className="w-full p-3 hover:bg-foreground/5 rounded-xl text-sm font-bold truncate text-left"
                   >
@@ -252,7 +252,7 @@ if (!activeBhajan) {
                       key={b.id} 
                       onClick={() => {
                         if (isViewMode) router.push(`/live?viewLyrics=${b.id}`);
-                        else useRoomStore.getState().addBhajanToQueue(b.id);
+                        else useRoomStore.getState().addToQueue(b.id);
                       }}
                       className="flex items-center gap-4 p-4 glass bg-foreground/[0.02] rounded-2xl hover:bg-foreground/5 transition-colors border border-foreground/5 w-full text-left"
                     >
@@ -377,6 +377,7 @@ if (!activeBhajan) {
     </div>
   );
 }
+
 
 
 
