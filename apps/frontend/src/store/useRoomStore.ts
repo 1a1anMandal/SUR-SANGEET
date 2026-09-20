@@ -152,17 +152,21 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
       .from('rooms')
       .select('*')
       .eq('id', roomId)
-      .gte('created_at', threeHoursAgo)
+      .gt('created_at', threeHoursAgo)
       .single();
 
     if (error || !room) {
-      alert('Room not found or has expired.');
+      console.error(error);
       return false;
     }
 
     await get()._fetchAndApplyRoomState(roomId);
+    
+    // Check if the joining user is the leader or a co-leader
     const isLeader = room.leader_id === userId;
-    set({ isMockLeader: isLeader });
+    const isCoLeader = Array.isArray(room.co_leaders) && room.co_leaders.includes(userId);
+    
+    set({ isMockLeader: isLeader || isCoLeader });
     get()._subscribeToRoom(roomId, userId, name);
 
     return true;

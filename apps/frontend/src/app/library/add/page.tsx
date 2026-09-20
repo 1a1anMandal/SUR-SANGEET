@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, Music2, Image as ImageIcon, AlignLeft, Loader2 } from 'lucide-react';
+import { ChevronLeft, Music2, Image as ImageIcon, AlignLeft, Loader2, Type } from 'lucide-react';
 import { BhajanParagraph } from '@app/shared';
 import { supabase } from '@/lib/supabase';
 import { useLibraryStore } from '@/store/useLibraryStore';
@@ -11,18 +11,33 @@ import ThemeToggle from '@/components/ThemeToggle';
 
 export default function AddBhajan() {
   const router = useRouter();
-  const fetchBhajans = useLibraryStore(state => state.fetchBhajans);
+  const { bhajans, fetchBhajans } = useLibraryStore();
   
   const [title, setTitle] = useState('');
+  const [englishTitle, setEnglishTitle] = useState('');
   const [deity, setDeity] = useState('');
   const [lyrics, setLyrics] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  // Extract unique categories for autocomplete
+  const categories = useMemo(() => {
+    const cats = new Set<string>();
+    bhajans.forEach(b => cats.add(b.deity));
+    return Array.from(cats);
+  }, [bhajans]);
+
+  const filteredCategories = categories.filter(c => c.toLowerCase().includes(deity.toLowerCase()) && c.toLowerCase() !== deity.toLowerCase());
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !lyrics) return alert('Please enter title and lyrics');
+    if ((!title && !englishTitle) || !lyrics) return alert('Please enter at least one title (Hindi or English) and the lyrics.');
 
     setIsSubmitting(true);
+
+    // Enforce Category Formatting (Capitalize first letter, lower rest)
+    const rawDeity = deity.trim() || 'Unknown';
+    const formattedDeity = rawDeity.charAt(0).toUpperCase() + rawDeity.slice(1).toLowerCase();
 
     // Parse lyrics into exactly 4-line paragraphs
     const lines = lyrics.split('\n').map(l => l.trim()).filter(l => l.length > 0);
@@ -35,8 +50,9 @@ export default function AddBhajan() {
 
     // Insert directly into Supabase
     const { error } = await supabase.from('bhajans').insert([{
-      title,
-      deity: deity || 'Unknown',
+      title: title.trim(), // Can be empty if they only provided english
+      english_title: englishTitle.trim() || null,
+      deity: formattedDeity,
       lyrics: parsedLyrics,
       status: 'approved'
     }]);
@@ -67,18 +83,18 @@ export default function AddBhajan() {
         <ThemeToggle />
       </header>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6 relative">
         <div className="glass p-6 rounded-3xl space-y-5 border-primary/20">
           
           <div>
             <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-2 block ml-1">
-              Title
+              Title (Hindi)
             </label>
             <div className="bg-foreground/[0.05] rounded-xl flex items-center px-4 py-3 gap-3 border border-foreground/5 focus-within:border-primary/50 transition-colors">
               <Music2 className="w-5 h-5 text-primary/60" />
               <input 
                 type="text" 
-                placeholder="e.g. Achyutam Keshavam" 
+                placeholder="e.g. अच्युतम केशवं" 
                 className="bg-transparent w-full outline-none text-foreground text-sm font-medium"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -88,23 +104,65 @@ export default function AddBhajan() {
 
           <div>
             <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-2 block ml-1">
-              Deity / Category
+              English Title
             </label>
             <div className="bg-foreground/[0.05] rounded-xl flex items-center px-4 py-3 gap-3 border border-foreground/5 focus-within:border-primary/50 transition-colors">
+              <Type className="w-5 h-5 text-primary/60" />
+              <input 
+                type="text" 
+                placeholder="e.g. Achyutam Keshavam" 
+                className="bg-transparent w-full outline-none text-foreground text-sm font-medium"
+                value={englishTitle}
+                onChange={(e) => setEnglishTitle(e.target.value)}
+              />
+            </div>
+            <p className="text-[10px] text-foreground/40 ml-1 mt-2">
+              Note: At least one title (Hindi or English) must be provided.
+            </p>
+          </div>
+
+          <div className="relative">
+            <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-2 block ml-1">
+              Deity / Category *
+            </label>
+            <div className="bg-foreground/[0.05] rounded-xl flex items-center px-4 py-3 gap-3 border border-foreground/5 focus-within:border-primary/50 transition-colors relative z-10">
               <ImageIcon className="w-5 h-5 text-primary/60" />
               <input 
                 type="text" 
                 placeholder="e.g. Krishna" 
                 className="bg-transparent w-full outline-none text-foreground text-sm font-medium"
                 value={deity}
-                onChange={(e) => setDeity(e.target.value)}
+                onChange={(e) => {
+                  setDeity(e.target.value);
+                  setShowSuggestions(true);
+                }}
+                onFocus={() => setShowSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
               />
             </div>
+            {showSuggestions && filteredCategories.length > 0 && (
+              <div className="absolute top-full left-0 w-full mt-2 bg-background border border-foreground/10 rounded-xl shadow-2xl z-20 overflow-hidden max-h-40 overflow-y-auto">
+                {filteredCategories.map(c => (
+                  <button
+                    key={c}
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => {
+                      setDeity(c);
+                      setShowSuggestions(false);
+                    }}
+                    className="w-full text-left px-4 py-3 text-sm hover:bg-foreground/5 transition-colors font-bold"
+                  >
+                    {c}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div>
             <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-2 block ml-1">
-              Lyrics (Hindi)
+              Lyrics *
             </label>
             <div className="bg-foreground/[0.05] rounded-xl flex items-start px-4 py-3 gap-3 border border-foreground/5 focus-within:border-primary/50 transition-colors">
               <AlignLeft className="w-5 h-5 text-primary/60 mt-1" />
@@ -139,4 +197,3 @@ export default function AddBhajan() {
     </main>
   );
 }
-

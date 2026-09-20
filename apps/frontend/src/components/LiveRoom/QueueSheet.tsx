@@ -99,7 +99,10 @@ export default function QueueSheet() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const searchResults = searchQuery.trim() 
-    ? bhajans.filter(b => b.title.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5)
+    ? bhajans.filter(b => 
+        b.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        (b.english_title && b.english_title.toLowerCase().includes(searchQuery.toLowerCase()))
+      ).slice(0, 5)
     : [];
 
   const sensors = useSensors(

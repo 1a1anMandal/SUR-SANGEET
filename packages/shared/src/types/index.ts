@@ -5,6 +5,7 @@ export interface BhajanParagraph {
 export interface Bhajan {
   id: string;
   title: string;
+  english_title?: string | null;
   deity: string;
   lyrics: BhajanParagraph[];
   coverImage?: string;
