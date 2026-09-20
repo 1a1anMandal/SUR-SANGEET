@@ -291,7 +291,8 @@ export default function AdminDashboard() {
               {roomsList.map((room) => {
                 const b = bhajansList.find(x => x.id === room.current_bhajan_id);
                 return (
-                  <div key={room.id} className="glass p-5 rounded-2xl border-foreground/10 flex flex-col group relative overflow-hidden shadow-lg">
+                  <div key={room.id} className="glass p-5 rounded-2xl border border-foreground/10 flex flex-col group relative overflow-hidden shadow-lg">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full blur-xl -mr-8 -mt-8 pointer-events-none" />
                     <div className="flex justify-between items-center mb-4 relative z-10">
                       <span className="text-2xl font-black text-primary tracking-[0.2em]">{room.id}</span>
                       <span className="px-2 py-1 bg-green-500/10 text-green-500 text-[10px] font-bold uppercase tracking-widest rounded-md flex items-center gap-1 border border-green-500/20">
@@ -300,7 +301,7 @@ export default function AdminDashboard() {
                     </div>
                     <div className="mb-4 relative z-10 flex-1">
                       <p className="text-[10px] uppercase tracking-widest text-foreground/50 font-bold mb-1">Now Playing</p>
-                      <p className="font-bold text-sm truncate">{b?.title || 'Unknown'}</p>
+                      <p className="font-bold text-foreground text-sm truncate">{b?.title || 'Unknown'}</p>
                     </div>
                     <div className="flex gap-2 relative z-10">
                       <button 
@@ -311,9 +312,9 @@ export default function AdminDashboard() {
                         }}
                         className="flex-1 flex items-center justify-center gap-2 bg-primary/10 hover:bg-primary/20 text-primary py-2 rounded-xl text-sm font-bold transition-colors border border-primary/20"
                       >
-                        Join Room
+                        <LogOut className="w-4 h-4" /> Join
                       </button>
-                      <button onClick={() => disbandRoom(room.id)} className="p-2 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-xl transition-all border border-red-500/20" title="Disband Room">
+                      <button onClick={() => disbandRoom(room.id)} className="flex items-center justify-center p-2 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-xl transition-all border border-red-500/20" title="Disband Room">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -321,8 +322,10 @@ export default function AdminDashboard() {
                 );
               })}
               {roomsList.length === 0 && (
-                <div className="col-span-full py-12 text-center glass rounded-2xl">
-                  <p className="text-foreground/50 font-medium">No live rooms are currently active.</p>
+                <div className="col-span-full py-16 text-center glass rounded-2xl border border-foreground/5">
+                  <Flame className="w-10 h-10 text-foreground/20 mx-auto mb-3" />
+                  <h3 className="text-lg font-bold text-foreground mb-1">No Active Rooms</h3>
+                  <p className="text-sm text-foreground/50">There are no live sessions running right now.</p>
                 </div>
               )}
             </div>
@@ -383,29 +386,34 @@ export default function AdminDashboard() {
               {sortedBhajans.map((bhajan) => {
                 const isIncomplete = !bhajan.title || !bhajan.english_title;
                 return (
-                <div key={bhajan.id} className={`glass rounded-2xl flex flex-col overflow-hidden border ${isIncomplete ? 'border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.2)]' : 'border-foreground/10'}`}>
-                  <div className="p-4 border-b border-foreground/5 bg-foreground/[0.02] flex justify-between items-start">
-                    <div>
-                      <h3 className="font-black text-lg">{bhajan.title || <span className="text-red-500 text-sm italic">Missing Hindi Title</span>}</h3>
-                      <p className="text-xs text-foreground/60 font-medium mb-1">{bhajan.english_title || <span className="text-red-500 text-xs italic">Missing English Title</span>}</p>
-                      <p className="text-xs text-primary font-bold uppercase tracking-widest mt-1">{bhajan.deity}</p>
+                <div key={bhajan.id} className={`glass p-5 rounded-2xl border flex flex-col group hover:border-primary/30 transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/5 ${isIncomplete ? 'border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.2)]' : 'border-foreground/10'}`}>
+                  <div className="flex-1">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h3 className="font-black text-lg leading-tight text-foreground mb-1 group-hover:text-primary transition-colors">{bhajan.title || <span className="text-red-500 text-sm italic">Missing Hindi Title</span>}</h3>
+                        <p className="text-xs text-foreground/60 font-medium mb-1">{bhajan.english_title || <span className="text-red-500 text-xs italic">Missing English Title</span>}</p>
+                        <span className="inline-block px-2 py-0.5 bg-foreground/5 rounded text-[10px] font-bold text-foreground/70 uppercase tracking-wider mt-1">
+                          {bhajan.deity}
+                        </span>
+                      </div>
+                      <button 
+                        onClick={() => setEditingBhajan(bhajan)}
+                        className="p-2 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg transition-colors"
+                        title="Edit Bhajan"
+                      >
+                        <Edit3 className="w-4 h-4" />
+                      </button>
                     </div>
-                    <button 
-                      onClick={() => setEditingBhajan(bhajan)}
-                      className="p-2 bg-primary/10 text-primary hover:bg-primary/20 rounded-lg transition-colors"
-                      title="Edit Bhajan"
-                    >
-                      <Edit3 className="w-4 h-4" />
-                    </button>
+                    
+                    <div className="bg-foreground/[0.03] p-4 rounded-xl max-h-32 overflow-hidden relative mb-5 border border-foreground/5">
+                      <p className="text-xs text-foreground/70 whitespace-pre-line leading-relaxed font-medium">
+                        {Array.isArray(bhajan.lyrics) ? bhajan.lyrics.map(l => l.hindi).join('\n') : ''}
+                      </p>
+                      <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-background to-transparent" />
+                    </div>
                   </div>
                   
-                  <div className="p-4 flex-1">
-                    <p className="text-xs text-foreground/50 whitespace-pre-wrap font-medium">
-                      {bhajan.lyrics[0]?.hindi}
-                    </p>
-                  </div>
-                  
-                  <div className="p-4 flex gap-2 border-t border-foreground/5 bg-background/30">
+                  <div className="flex gap-2 pt-4 border-t border-foreground/10">
                     <div className="flex-1 flex items-center justify-center py-2 rounded-lg bg-green-500/10 text-xs font-bold text-green-500 gap-2 border border-green-500/20">
                       <CheckCircle className="w-3 h-3" /> Live
                     </div>
@@ -420,6 +428,13 @@ export default function AdminDashboard() {
                 </div>
                 );
               })}
+              {bhajansList.length === 0 && (
+                <div className="col-span-full py-16 text-center glass rounded-2xl border border-foreground/5">
+                  <Music className="w-10 h-10 text-foreground/20 mx-auto mb-3" />
+                  <h3 className="text-lg font-bold text-foreground mb-1">No Bhajans Found</h3>
+                  <p className="text-sm text-foreground/50">The library is currently empty.</p>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -427,44 +442,55 @@ export default function AdminDashboard() {
         {/* USERS TAB */}
         {activeTab === 'users' && (
           <div className="space-y-6 animate-fade-in max-w-6xl mx-auto">
-            <header className="mb-6">
-              <h1 className="text-2xl font-black mb-1">Users Directory</h1>
-              <p className="text-sm text-foreground/60">Manage accounts across the platform.</p>
+            <header className="mb-6 flex justify-between items-end">
+              <div>
+                <h1 className="text-2xl font-black text-foreground mb-1">Registered Users</h1>
+                <p className="text-sm text-foreground/60">Manage all devotees registered on the platform.</p>
+              </div>
             </header>
             
-            <div className="glass rounded-2xl border border-foreground/10 overflow-hidden">
+            <div className="glass rounded-2xl border border-foreground/10 overflow-hidden shadow-lg">
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm whitespace-nowrap">
-                  <thead className="bg-foreground/[0.03] border-b border-foreground/5">
+                <table className="w-full text-left border-collapse text-sm">
+                  <thead className="bg-foreground/[0.02] border-b border-foreground/5">
                     <tr>
-                      <th className="px-6 py-4 font-bold text-foreground/50 uppercase tracking-wider text-[10px]">User</th>
-                      <th className="px-6 py-4 font-bold text-foreground/50 uppercase tracking-wider text-[10px]">Mobile</th>
-                      <th className="px-6 py-4 font-bold text-foreground/50 uppercase tracking-wider text-[10px]">Role</th>
-                      <th className="px-6 py-4 font-bold text-foreground/50 uppercase tracking-wider text-[10px]">Joined</th>
-                      <th className="px-6 py-4"></th>
+                      <th className="p-4 font-bold text-[10px] uppercase tracking-widest text-foreground/50">Devotee</th>
+                      <th className="p-4 font-bold text-[10px] uppercase tracking-widest text-foreground/50">Mobile</th>
+                      <th className="p-4 font-bold text-[10px] uppercase tracking-widest text-foreground/50">Access Level</th>
+                      <th className="p-4 font-bold text-[10px] uppercase tracking-widest text-foreground/50 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-foreground/5">
                     {usersList.map((u) => (
-                      <tr key={u.id} className="hover:bg-foreground/[0.02] transition-colors">
-                        <td className="px-6 py-4">
-                          <div className="font-bold">{u.name}</div>
-                          <div className="text-[10px] text-foreground/40">@{u.username}</div>
+                      <tr key={u.id} className="hover:bg-foreground/[0.02] transition-colors group">
+                        <td className="p-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-orange-500/20 border border-primary/20 flex items-center justify-center text-primary text-xs font-bold overflow-hidden shrink-0">
+                              {u.avatar_url ? (
+                                /* eslint-disable-next-line @next/next/no-img-element */
+                                <img src={u.avatar_url} alt={u.name} className="w-full h-full object-cover" />
+                              ) : (
+                                u.name.charAt(0).toUpperCase()
+                              )}
+                            </div>
+                            <div>
+                              <p className="font-bold text-foreground text-sm group-hover:text-primary transition-colors">{u.name}</p>
+                              <p className="text-[10px] text-foreground/50">@{u.username}</p>
+                            </div>
+                          </div>
                         </td>
-                        <td className="px-6 py-4 font-medium">{u.mobile}</td>
-                        <td className="px-6 py-4">
-                          <span className={`px-2 py-1 text-[10px] font-bold uppercase tracking-widest rounded-md ${u.role === 'admin' ? 'bg-primary/20 text-primary' : 'bg-foreground/10 text-foreground/60'}`}>
-                            {u.role || 'user'}
+                        <td className="p-4 text-foreground/70 font-medium text-xs">{u.mobile}</td>
+                        <td className="p-4">
+                          <span className={`inline-flex items-center justify-center px-2 py-0.5 text-[10px] rounded-full font-bold uppercase tracking-wider border ${u.role === 'admin' ? 'bg-primary/10 text-primary border-primary/20 shadow-[0_0_10px_rgba(255,122,0,0.2)]' : 'bg-foreground/5 text-foreground/60 border-foreground/10'}`}>
+                            {u.role || 'User'}
                           </span>
                         </td>
-                        <td className="px-6 py-4 text-foreground/60 text-xs">
-                          {new Date(u.created_at).toLocaleDateString()}
-                        </td>
-                        <td className="px-6 py-4 text-right">
+                        <td className="p-4 text-right">
                           <button 
                             onClick={() => deleteUser(u.id, u.name)}
                             disabled={u.id === user?.id}
-                            className="p-2 text-foreground/40 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all disabled:opacity-30"
+                            className={`p-2 rounded-lg transition-all ${u.id === user?.id ? 'opacity-30 cursor-not-allowed text-foreground/50' : 'bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white border border-red-500/20'}`}
+                            title={u.id === user?.id ? "You cannot delete yourself" : "Delete User"}
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>

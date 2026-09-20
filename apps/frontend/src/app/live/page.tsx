@@ -168,12 +168,12 @@ if (!activeBhajan) {
 
       <main className="flex-1 flex flex-col relative overflow-hidden">
         {/* Title Area */}
-        <div className="text-center mt-2 mb-8 relative z-10 animate-fade-in px-4">
-          <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-primary mb-2 flex items-center justify-center gap-2">
-            <span className="text-orange-500">?</span> {activeBhajan.deity} BHAJAN
-          </p>
-          <h2 className="text-3xl font-black text-primary text-glow mb-2">{activeBhajan.title}</h2>
-        </div>
+          <div className="text-center mt-2 mb-8 relative z-10 animate-fade-in px-4">
+            <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-primary mb-2 flex items-center justify-center gap-2">
+              <Flame className="w-3 h-3 text-orange-500" /> {activeBhajan.deity} BHAJAN
+            </p>
+            <h2 className="text-3xl font-black text-primary text-glow mb-2">{activeBhajan.title}</h2>
+          </div>
 
         {/* Center Orange Gradient Focus Area */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-64 bg-[radial-gradient(ellipse_at_center,rgba(255,122,0,0.15)_0%,transparent_70%)] pointer-events-none z-0" />
@@ -209,31 +209,6 @@ if (!activeBhajan) {
                 </div>
               );
             })}
-
-            {/* Random Suggestions (Only in View Mode) */}
-            {isViewMode && (
-              <div className="mt-10 mb-32 px-4 animate-fade-in relative z-20">
-                <div className="w-12 h-1 bg-foreground/10 rounded-full mx-auto mb-8" />
-                <h3 className="text-center font-bold text-foreground/50 mb-4 text-sm tracking-widest uppercase">You Might Also Like</h3>
-                <div className="flex flex-col gap-3 max-w-sm mx-auto pb-20">
-                    {randomSuggestions.map(b => (
-                      <button 
-                        key={b.id} 
-                        onClick={() => router.push(`/live?viewLyrics=${b.id}`)}
-                        className="flex items-center gap-4 p-4 glass bg-foreground/[0.02] rounded-2xl hover:bg-foreground/5 transition-colors border border-foreground/5 w-full text-left"
-                      >
-                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                          <Music2 className="w-4 h-4" />
-                        </div>
-                        <div className="overflow-hidden">
-                          <p className="font-bold text-sm truncate">{b.title}</p>
-                          <p className="text-[10px] text-foreground/50 uppercase tracking-widest">{b.deity}</p>
-                        </div>
-                      </button>
-                    ))}
-                </div>
-              </div>
-            )}
           </div>
         </div>
 

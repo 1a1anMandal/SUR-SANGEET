@@ -7,8 +7,8 @@ import { cn } from '@/lib/utils';
 
 export default function BottomNav() {
   const pathname = usePathname();
-  // Hide on login
-  if (pathname === '/login') return null;
+  // Hide on login and live room
+  if (pathname === '/login' || pathname === '/live') return null;
 
   const navItems = [
     { name: 'Home', href: '/home', icon: Home },
