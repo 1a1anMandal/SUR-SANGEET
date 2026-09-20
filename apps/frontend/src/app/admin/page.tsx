@@ -274,6 +274,59 @@ export default function AdminDashboard() {
                 </div>
               </div>
             </div>
+
+            {/* ACTIVE ROOMS (Dashboard Overview) */}
+            <div className="mt-12 mb-6">
+              <header className="mb-6 flex justify-between items-end">
+                <div>
+                  <h2 className="text-2xl font-black text-foreground mb-1 flex items-center gap-2"><Flame className="w-6 h-6 text-primary"/> Active Live Rooms</h2>
+                  <p className="text-sm text-foreground/60">Monitor and manage currently running sessions.</p>
+                </div>
+              </header>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                {roomsList.map((room) => {
+                  const b = bhajansList.find(x => x.id === room.current_bhajan_id);
+                  return (
+                    <div key={room.id} className="glass p-5 rounded-2xl border border-foreground/10 flex flex-col group relative overflow-hidden shadow-lg">
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full blur-xl -mr-8 -mt-8 pointer-events-none" />
+                      <div className="flex justify-between items-center mb-4 relative z-10">
+                        <span className="text-2xl font-black text-primary tracking-[0.2em]">{room.id}</span>
+                        <span className="px-2 py-1 bg-green-500/10 text-green-500 text-[10px] font-bold uppercase tracking-widest rounded-md flex items-center gap-1 border border-green-500/20">
+                          <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" /> Live
+                        </span>
+                      </div>
+                      <div className="mb-4 relative z-10 flex-1">
+                        <p className="text-[10px] uppercase tracking-widest text-foreground/50 font-bold mb-1">Now Playing</p>
+                        <p className="font-bold text-foreground text-sm truncate">{b?.title || 'Unknown'}</p>
+                      </div>
+                      <div className="flex gap-2 relative z-10">
+                        <button 
+                          onClick={async () => {
+                            const { useRoomStore } = await import('@/store/useRoomStore');
+                            const success = await useRoomStore.getState().joinRoom(room.id, user!.id, user!.name);
+                            if(success) router.push('/live');
+                          }}
+                          className="flex-1 flex items-center justify-center gap-2 bg-primary/10 hover:bg-primary/20 text-primary py-2 rounded-xl text-sm font-bold transition-colors border border-primary/20"
+                        >
+                          <LogOut className="w-4 h-4" /> Join
+                        </button>
+                        <button onClick={() => disbandRoom(room.id)} className="flex items-center justify-center p-2 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white rounded-xl transition-all border border-red-500/20" title="Disband Room">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+                {roomsList.length === 0 && (
+                  <div className="col-span-full py-16 text-center glass rounded-2xl border border-foreground/5">
+                    <Flame className="w-10 h-10 text-foreground/20 mx-auto mb-3" />
+                    <h3 className="text-lg font-bold text-foreground mb-1">No Active Rooms</h3>
+                    <p className="text-sm text-foreground/50">There are no live sessions running right now.</p>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         )}
 
