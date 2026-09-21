@@ -71,13 +71,16 @@ export default function AdminDashboard() {
   const disbandRoom = async (id: string) => {
     if (!confirm('Are you sure you want to disband this Live Room?')) return;
     setActionLoading('Disbanding Room...');
-    const { error, data } = await supabase.from('rooms').delete().eq('id', id).select();
+    
+    // First, optimistically remove from UI
+    setRoomsList(prev => prev.filter(r => r.id !== id));
+
+    // Then delete from DB
+    const { error } = await supabase.from('rooms').delete().eq('id', id);
     if (error) {
       alert('Error disbanding room: ' + error.message);
-    } else if (data && data.length === 0) {
-      alert('Room not deleted. You might not have permission, or it was already deleted. Please run the provided SQL policy for Admins to delete rooms if needed.');
-    } else {
-      setRoomsList(prev => prev.filter(r => r.id !== id));
+      // Revert if error
+      fetchData(); 
     }
     setActionLoading('');
   };
