@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/useAuthStore';
 import { supabase } from '@/lib/supabase';
-import { Users, Music, LayoutDashboard, Trash2, CheckCircle, LogOut, Flame, Edit3, Merge, ArrowRight, FolderKanban, ShieldAlert } from 'lucide-react';
+import { Users, Music, LayoutDashboard, Trash2, CheckCircle, LogOut, Flame, Edit3, Merge, ArrowRight, FolderKanban, ShieldAlert, Menu, X } from 'lucide-react';
 import ThemeToggle from '@/components/ThemeToggle';
 import Link from 'next/link';
 import { Bhajan } from '@app/shared';
@@ -27,6 +27,7 @@ export default function AdminDashboard() {
   const [editingBhajan, setEditingBhajan] = useState<Bhajan | null>(null);
   const [mergeSource, setMergeSource] = useState('');
   const [mergeTarget, setMergeTarget] = useState('');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -70,8 +71,14 @@ export default function AdminDashboard() {
   const disbandRoom = async (id: string) => {
     if (!confirm('Are you sure you want to disband this Live Room?')) return;
     setActionLoading('Disbanding Room...');
-    const { error } = await supabase.from('rooms').delete().eq('id', id);
-    if (!error) setRoomsList(roomsList.filter(r => r.id !== id));
+    const { error, data } = await supabase.from('rooms').delete().eq('id', id).select();
+    if (error) {
+      alert('Error disbanding room: ' + error.message);
+    } else if (data && data.length === 0) {
+      alert('Room not deleted. You might not have permission, or it was already deleted. Please run the provided SQL policy for Admins to delete rooms if needed.');
+    } else {
+      setRoomsList(prev => prev.filter(r => r.id !== id));
+    }
     setActionLoading('');
   };
 
@@ -169,38 +176,46 @@ export default function AdminDashboard() {
       {actionLoading && <FullScreenLoader text={actionLoading} />}
       
       {/* Sidebar */}
-      <aside className="w-full md:w-64 bg-card border-r border-foreground/5 flex flex-col fixed md:sticky top-0 z-50 h-[70px] md:h-screen">
+      <aside className={`w-full md:w-64 bg-card border-r border-foreground/5 flex flex-col fixed md:sticky top-0 z-50 transition-all duration-300 ${mobileMenuOpen ? 'h-screen pb-4 shadow-2xl' : 'h-[70px] md:h-screen'}`}>
         <div className="p-4 md:p-6 flex justify-between items-center md:block">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-black">
               <Flame className="w-4 h-4 fill-current" />
             </div>
-            <span className="font-black tracking-wide hidden md:block">Sur Sangeet</span>
+            <span className="font-black tracking-wide">Sur Sangeet</span>
           </div>
-          <ThemeToggle />
+          <div className="flex items-center gap-4">
+            <ThemeToggle />
+            <button 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 rounded-lg bg-foreground/5 hover:bg-foreground/10 transition-colors"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
         </div>
 
-        <nav className="flex-1 px-4 hidden md:flex flex-col gap-2 overflow-y-auto mt-4">
+        <nav className={`flex-1 px-4 flex-col gap-2 overflow-y-auto mt-4 ${mobileMenuOpen ? 'flex' : 'hidden md:flex'}`}>
           <p className="text-[10px] font-bold uppercase tracking-wider text-foreground/40 mb-2 px-4">Menu</p>
           
-          <button onClick={() => setActiveTab('dashboard')} className={`flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all ${activeTab === 'dashboard' ? 'bg-primary/20 text-primary font-bold' : 'text-foreground/70 hover:bg-foreground/5'}`}>
+          <button onClick={() => { setActiveTab('dashboard'); setMobileMenuOpen(false); }} className={`flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all ${activeTab === 'dashboard' ? 'bg-primary/20 text-primary font-bold' : 'text-foreground/70 hover:bg-foreground/5'}`}>
             <LayoutDashboard className="w-4 h-4" /> Overview
           </button>
           
-          <button onClick={() => setActiveTab('rooms')} className={`flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all ${activeTab === 'rooms' ? 'bg-primary/20 text-primary font-bold' : 'text-foreground/70 hover:bg-foreground/5'}`}>
+          <button onClick={() => { setActiveTab('rooms'); setMobileMenuOpen(false); }} className={`flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all ${activeTab === 'rooms' ? 'bg-primary/20 text-primary font-bold' : 'text-foreground/70 hover:bg-foreground/5'}`}>
             <Flame className="w-4 h-4" /> Live Rooms <span className="ml-auto bg-foreground/10 px-2 py-0.5 rounded-full text-[9px]">{roomsList.length}</span>
           </button>
           
-          <button onClick={() => setActiveTab('bhajans')} className={`flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all ${activeTab === 'bhajans' ? 'bg-primary/20 text-primary font-bold' : 'text-foreground/70 hover:bg-foreground/5'}`}>
+          <button onClick={() => { setActiveTab('bhajans'); setMobileMenuOpen(false); }} className={`flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all ${activeTab === 'bhajans' ? 'bg-primary/20 text-primary font-bold' : 'text-foreground/70 hover:bg-foreground/5'}`}>
             <Music className="w-4 h-4" /> Bhajans <span className="ml-auto bg-foreground/10 px-2 py-0.5 rounded-full text-[9px]">{bhajansList.length}</span>
           </button>
 
-          <button onClick={() => setActiveTab('categories')} className={`flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all ${activeTab === 'categories' ? 'bg-primary/20 text-primary font-bold' : 'text-foreground/70 hover:bg-foreground/5'}`}>
+          <button onClick={() => { setActiveTab('categories'); setMobileMenuOpen(false); }} className={`flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all ${activeTab === 'categories' ? 'bg-primary/20 text-primary font-bold' : 'text-foreground/70 hover:bg-foreground/5'}`}>
             <FolderKanban className="w-4 h-4" /> Categories
           </button>
           
-          <button onClick={() => setActiveTab('users')} className={`flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all ${activeTab === 'users' ? 'bg-primary/20 text-primary font-bold' : 'text-foreground/70 hover:bg-foreground/5'}`}>
-            <Users className="w-4 h-4" /> Users
+          <button onClick={() => { setActiveTab('users'); setMobileMenuOpen(false); }} className={`flex items-center gap-3 px-4 py-3 text-sm rounded-xl transition-all ${activeTab === 'users' ? 'bg-primary/20 text-primary font-bold' : 'text-foreground/70 hover:bg-foreground/5'}`}>
+            <Users className="w-4 h-4" /> Users <span className="ml-auto bg-foreground/10 px-2 py-0.5 rounded-full text-[9px]">{usersList.length}</span>
           </button>
         </nav>
 

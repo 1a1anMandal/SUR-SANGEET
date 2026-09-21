@@ -45,7 +45,6 @@ function SortableQueueItem({ q, b, index, isMockLeader, voteQueue, removeQueueIt
     <motion.div
       ref={setNodeRef}
       style={style}
-      layout
       drag={isMockLeader ? "x" : false}
       dragConstraints={{ left: 0, right: 100 }}
       onDragEnd={(e, info) => {
@@ -95,15 +94,6 @@ export default function QueueSheet() {
   const { queue, isMockLeader, reorderQueue, voteQueue, addToQueue } = useRoomStore();
   const { isQueueSheetOpen, setQueueSheetOpen } = useUIStore();
   const bhajans = useLibraryStore(state => state.bhajans);
-  
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const searchResults = searchQuery.trim() 
-    ? bhajans.filter(b => 
-        b.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-        (b.english_title && b.english_title.toLowerCase().includes(searchQuery.toLowerCase()))
-      ).slice(0, 5)
-    : [];
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -146,45 +136,18 @@ export default function QueueSheet() {
         </button>
       </div>
 
-      {/* Queue Search Area */}
-      <div className="px-6 mb-6 relative">
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/40" />
-          <input 
-            type="text" 
-            placeholder="Search & add to queue..." 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-foreground/5 border border-foreground/10 rounded-full py-3 pl-10 pr-4 text-sm focus:outline-none focus:border-primary/50 transition-colors"
-          />
-        </div>
-        
-        {searchQuery && searchResults.length > 0 && (
-          <div className="absolute top-full left-6 right-6 mt-2 bg-background/95 backdrop-blur-xl border border-foreground/10 rounded-2xl p-2 shadow-2xl z-50 max-h-48 overflow-y-auto text-left">
-            {searchResults.map(b => (
-              <button 
-                key={b.id} 
-                onClick={() => {
-                  setSearchQuery('');
-                  addToQueue(b.id);
-                }}
-                className="w-full p-3 hover:bg-foreground/5 rounded-xl text-sm font-bold truncate text-left flex justify-between items-center"
-              >
-                <span>{b.title}</span>
-                <span className="text-[10px] uppercase text-foreground/40 bg-foreground/5 px-2 py-1 rounded">{b.deity}</span>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
       {/* Queue List */}
       <div className="flex-1 overflow-y-auto px-6 pb-10 no-scrollbar overflow-x-hidden">
-        {isMockLeader && queue.length > 0 && (
-          <p className="text-[10px] text-foreground/40 uppercase tracking-widest text-center mb-4">
-            Drag to reorder • Swipe right to remove
+        <div className="flex justify-between items-center mb-4">
+          <p className="text-[10px] text-foreground/40 uppercase tracking-widest">
+            {queue.length} / 10 Songs
           </p>
-        )}
+          {isMockLeader && queue.length > 0 && (
+            <p className="text-[10px] text-foreground/40 uppercase tracking-widest text-right">
+              Drag to reorder • Swipe right to remove
+            </p>
+          )}
+        </div>
         <DndContext 
           sensors={sensors}
           collisionDetection={closestCenter}
@@ -194,24 +157,22 @@ export default function QueueSheet() {
             items={queue.map(q => q.id)}
             strategy={verticalListSortingStrategy}
           >
-            <div className="space-y-3">
-              <AnimatePresence>
-                {queue.map((q, idx) => {
-                  const b = bhajans.find(x => x.id === q.id);
-                  if (!b) return null;
-                  return (
-                    <SortableQueueItem 
-                      key={q.id} 
-                      q={q} 
-                      b={b} 
-                      index={idx} 
-                      isMockLeader={isMockLeader} 
-                      voteQueue={voteQueue} 
-                      removeQueueItem={removeQueueItem} 
-                    />
-                  );
-                })}
-              </AnimatePresence>
+            <div className="space-y-3 relative">
+              {queue.map((q, idx) => {
+                const b = bhajans.find(x => x.id === q.id);
+                if (!b) return null;
+                return (
+                  <SortableQueueItem 
+                    key={q.id} 
+                    q={q} 
+                    b={b} 
+                    index={idx} 
+                    isMockLeader={isMockLeader} 
+                    voteQueue={voteQueue} 
+                    removeQueueItem={removeQueueItem} 
+                  />
+                );
+              })}
             </div>
           </SortableContext>
         </DndContext>

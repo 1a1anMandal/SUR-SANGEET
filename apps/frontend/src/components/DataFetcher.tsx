@@ -17,6 +17,17 @@ export default function DataFetcher() {
   useEffect(() => {
     if (user) {
       fetchFavorites();
+      
+      // Restore active room if present
+      const savedRoomId = localStorage.getItem('active_room_id');
+      if (savedRoomId) {
+        import('@/store/useRoomStore').then(({ useRoomStore }) => {
+          const { roomId, joinRoom } = useRoomStore.getState();
+          if (!roomId || roomId !== savedRoomId) {
+            joinRoom(savedRoomId, user.id, user.name);
+          }
+        });
+      }
     }
   }, [user, fetchFavorites]);
 

@@ -6,6 +6,8 @@ interface UIStore {
   toggleTheme: () => void;
   isQueueSheetOpen: boolean;
   setQueueSheetOpen: (isOpen: boolean) => void;
+  isLibrarySheetOpen: boolean;
+  setLibrarySheetOpen: (isOpen: boolean) => void;
 }
 
 export const useUIStore = create<UIStore>()(
@@ -15,6 +17,8 @@ export const useUIStore = create<UIStore>()(
       toggleTheme: () => set((state) => ({ theme: state.theme === 'dark' ? 'light' : 'dark' })),
       isQueueSheetOpen: false,
       setQueueSheetOpen: (isOpen) => set({ isQueueSheetOpen: isOpen }),
+      isLibrarySheetOpen: false,
+      setLibrarySheetOpen: (isOpen) => set({ isLibrarySheetOpen: isOpen }),
     }),
     {
       name: 'ui-storage',

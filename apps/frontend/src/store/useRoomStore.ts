@@ -144,7 +144,7 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     return roomId;
   },
 
-  joinRoom: async (roomId, userId, name) => {
+    joinRoom: async (roomId, userId, name) => {
     // Only fetch rooms created in the last 3 hours
     const threeHoursAgo = new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString();
     
@@ -157,10 +157,14 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
 
     if (error || !room) {
       console.error(error);
+      localStorage.removeItem('active_room_id');
       return false;
     }
 
     await get()._fetchAndApplyRoomState(roomId);
+    
+    // Save to local storage for persistence on refresh
+    localStorage.setItem('active_room_id', roomId);
     
     // Check if the joining user is the leader or a co-leader
     const isLeader = room.leader_id === userId;
@@ -199,7 +203,9 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     const existing = queue.find(q => q.id === bhajanId);
     if (existing) return;
 
-    const newQueue = [...queue, { id: bhajanId, votes: 0, voters: [] }];
+    // FILO approach with a strict limit of 10. (Add to front, keep top 10)
+    const newQueue = [{ id: bhajanId, votes: 0, voters: [] }, ...queue].slice(0, 10);
+    
     // Optimistic update
     set({ queue: newQueue });
     
@@ -271,6 +277,7 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     if (channel) {
       supabase.removeChannel(channel);
     }
+    localStorage.removeItem('active_room_id');
     set({
       roomId: '',
       leaderId: '',

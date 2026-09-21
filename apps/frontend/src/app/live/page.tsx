@@ -9,6 +9,7 @@ import { useUIStore } from '@/store/useUIStore';
 import { cn } from '@/lib/utils';
 import ThemeToggle from '@/components/ThemeToggle';
 import QueueSheet from '@/components/LiveRoom/QueueSheet';
+import LibrarySheet from '@/components/LiveRoom/LibrarySheet';
 import MembersOverlay from '@/components/LiveRoom/MembersOverlay';
 
 export default function LiveRoom() {
@@ -20,7 +21,7 @@ export default function LiveRoom() {
     isMockLeader, activeBhajan: roomBhajan, activeParagraphIndex: roomParaIdx, 
     queue, participants, leaveRoom
   } = useRoomStore();
-  const { setQueueSheetOpen } = useUIStore();
+  const { setQueueSheetOpen, setLibrarySheetOpen } = useUIStore();
   const bhajans = useLibraryStore(state => state.bhajans);
   
   const [showMembers, setShowMembers] = useState(false);
@@ -130,24 +131,30 @@ if (!activeBhajan) {
       {/* Background Ambience */}
       <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
       
-            <header className="px-4 py-4 flex items-center justify-between z-10 relative">
+      <header className="px-4 py-4 flex items-center justify-between z-10 relative">
         <div className="flex items-center gap-3">
           <button 
             onClick={() => {
               if (!isViewMode) leaveRoom();
               router.back();
             }} 
-            className="w-10 h-10 flex items-center justify-center bg-foreground/5 rounded-full hover:bg-foreground/10 transition-colors"
+            className="w-10 h-10 rounded-full glass flex items-center justify-center text-foreground hover:bg-foreground/5 transition-colors shadow-lg border border-foreground/5"
           >
-            <ChevronLeft className="w-6 h-6 text-foreground" />
+            <ChevronLeft className="w-6 h-6" />
           </button>
-          
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-black shadow-[0_0_10px_rgba(255,122,0,0.4)]">
-              <Flame className="w-4 h-4 fill-current" />
+          {!isViewMode && (
+            <div className="flex flex-col">
+              <span className="text-[10px] uppercase tracking-widest text-foreground/50 font-bold">Room ID</span>
+              <span className="text-sm font-black text-primary tracking-widest">{useRoomStore.getState().roomId}</span>
             </div>
-            <span className="font-bold tracking-wide text-foreground">Sur Sangeet</span>
+          )}
+        </div>
+
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-black shadow-[0_0_10px_rgba(255,122,0,0.4)]">
+            <Flame className="w-4 h-4 fill-current" />
           </div>
+          <span className="font-bold tracking-wide text-foreground">Sur Sangeet</span>
         </div>
 
         <div className="flex gap-2 items-center">
@@ -215,24 +222,27 @@ if (!activeBhajan) {
         {/* Bottom Sheet Trigger & Footer (Only in Room mode) */}
         {!isViewMode && (
           <div className="absolute bottom-0 left-0 w-full z-50">
-            <div className="glass bg-background/95 rounded-t-3xl p-4 flex items-center justify-between mx-2 mb-2 shadow-[0_-10px_30px_rgba(0,0,0,0.5)] border border-foreground/5">
-              <button 
-                onClick={() => setQueueSheetOpen(true)}
-                className="flex items-center gap-3 px-4 py-3 bg-foreground/5 rounded-2xl active:scale-95 transition-transform"
-              >
-                <div className="relative">
-                  <Music2 className="w-5 h-5 text-primary" />
-                  {queue.length > 0 && (
-                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-background" />
-                  )}
-                </div>
-                <div className="text-left">
-                  <p className="text-xs font-bold text-foreground">Up Next</p>
-                  <p className="text-[10px] text-foreground/50 truncate w-24">
-                    {nextInQueueBhajan ? nextInQueueBhajan.title : 'Add to queue'}
-                  </p>
-                </div>
-              </button>
+            <div className={`glass bg-background/95 rounded-t-3xl p-4 flex items-center mx-2 mb-2 shadow-[0_-10px_30px_rgba(0,0,0,0.5)] border border-foreground/5 ${isMockLeader ? 'justify-between' : 'justify-center'}`}>
+              
+              {isMockLeader && (
+                <button 
+                  onClick={() => setLibrarySheetOpen(true)}
+                  className="flex items-center gap-3 px-4 py-3 bg-foreground/5 rounded-2xl active:scale-95 transition-transform"
+                >
+                  <div className="relative">
+                    <Music2 className="w-5 h-5 text-primary" />
+                    {queue.length > 0 && (
+                      <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-background" />
+                    )}
+                  </div>
+                  <div className="text-left">
+                    <p className="text-xs font-bold text-foreground">Up Next</p>
+                    <p className="text-[10px] text-foreground/50 truncate w-24">
+                      {nextInQueueBhajan ? nextInQueueBhajan.title : 'Add to queue'}
+                    </p>
+                  </div>
+                </button>
+              )}
 
               <div className="flex gap-2">
                 <button 
@@ -247,10 +257,11 @@ if (!activeBhajan) {
         )}
       </main>
 
-      {/* Overlays (Queue & Members) */}
+      {/* Overlays (Queue, Library & Members) */}
       {!isViewMode && (
         <>
           <QueueSheet />
+          <LibrarySheet />
 
           {/* Members Overlay */}
           {showMembers && (
