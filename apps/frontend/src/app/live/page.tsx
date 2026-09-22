@@ -20,7 +20,8 @@ export default function LiveRoom() {
   
   const { 
     isMockLeader, activeParagraphIndex: roomParaIdx, 
-    queue, participants, leaveRoom, currentBhajanId
+    queue, participants, leaveRoom, currentBhajanId,
+    roomId, roomName
   } = useRoomStore();
   const { setQueueSheetOpen, setLibrarySheetOpen } = useUIStore();
   const bhajans = useLibraryStore(state => state.bhajans);
@@ -151,7 +152,7 @@ export default function LiveRoom() {
       
       {/* TOP HEADER */}
       <header className="absolute top-[env(safe-area-inset-top,0px)] left-0 w-full z-50 px-4 py-4 md:px-8">
-        <div className="max-w-4xl mx-auto w-full glass rounded-3xl p-3 md:p-4 flex items-center justify-between gap-4 shadow-xl border-foreground/10">
+        <div className="max-w-4xl mx-auto w-full glass rounded-3xl p-4 flex items-start justify-between gap-4 shadow-xl border-foreground/10">
           
           <button 
             onClick={() => {
@@ -162,30 +163,32 @@ export default function LiveRoom() {
                 router.back();
               }
             }} 
-            className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-foreground/5 flex items-center justify-center text-foreground hover:bg-foreground/10 transition-colors shrink-0"
+            className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-foreground/5 flex items-center justify-center text-foreground hover:bg-foreground/10 transition-colors shrink-0 mt-2 md:mt-1"
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
 
           <div 
-            className="flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform"
+            className="flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform flex-1"
             onClick={() => router.push('/home')}
           >
-            <div className="flex items-center gap-2 mb-1">
-              <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-black shadow-[0_0_10px_rgba(255,122,0,0.4)]">
-                <Flame className="w-3 h-3 md:w-4 md:h-4 fill-current" />
+            <div className="flex flex-col items-center gap-1.5 md:gap-2 mb-2 md:mb-3">
+              <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-black shadow-lg">
+                <Flame className="w-5 h-5 md:w-6 md:h-6 fill-current" />
               </div>
-              <span className="font-bold text-sm md:text-base tracking-wide text-foreground">Sur Sangeet</span>
+              <span className="font-black text-lg md:text-xl tracking-wide text-foreground text-center">
+                {isViewMode ? 'Sur Sangeet' : (roomName || 'Live Room')}
+              </span>
             </div>
             {!isViewMode && (
-              <div className="flex items-center gap-2 bg-foreground/5 px-3 py-1 rounded-full">
-                <span className="text-[9px] md:text-[10px] uppercase tracking-widest text-foreground/50 font-bold">Room Code</span>
-                <span className="text-xs md:text-sm font-black text-primary tracking-widest">{useRoomStore.getState().roomId}</span>
+              <div className="flex items-center gap-2 bg-foreground/5 px-4 py-1.5 rounded-full border border-foreground/5">
+                <span className="text-[10px] uppercase tracking-widest text-foreground/50 font-bold">Code</span>
+                <span className="text-sm font-black text-primary tracking-widest">{roomId}</span>
               </div>
             )}
           </div>
 
-          <div className="flex gap-2 items-center">
+          <div className="flex flex-col gap-3 items-center mt-2 md:mt-1">
             {!isViewMode && (
               <button 
                 onClick={() => setShowMembers(true)}
@@ -197,13 +200,15 @@ export default function LiveRoom() {
                 </span>
               </button>
             )}
-            <ThemeToggle />
+            <div className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-foreground/5 rounded-full">
+              <ThemeToggle />
+            </div>
           </div>
 
         </div>
       </header>
 
-      <main className="flex-1 flex flex-col relative overflow-hidden w-full max-w-4xl mx-auto pt-24 md:pt-32">
+      <main className="flex-1 flex flex-col relative overflow-hidden w-full max-w-4xl mx-auto pt-36 md:pt-48">
         {/* Title Area */}
           <div className="text-center mt-2 mb-4 md:mb-8 relative z-10 animate-fade-in px-4 shrink-0">
             <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-primary mb-2 flex items-center justify-center gap-2">
