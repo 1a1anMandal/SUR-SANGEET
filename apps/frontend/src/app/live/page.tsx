@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useRoomStore } from '@/store/useRoomStore';
 import { useLibraryStore } from '@/store/useLibraryStore';
-import { ChevronLeft, Flame, Music2, Users, Menu } from 'lucide-react';
+import { useAuthStore } from '@/store/useAuthStore';
+import { ChevronLeft, Flame, Music2, Users, Menu, Power } from 'lucide-react';
 import { useUIStore } from '@/store/useUIStore';
 import { cn } from '@/lib/utils';
 import ThemeToggle from '@/components/ThemeToggle';
@@ -26,7 +27,12 @@ export default function LiveRoom() {
   
   const roomBhajan = bhajans.find(b => b.id === currentBhajanId) || null;
 
+  const user = useAuthStore(state => state.user);
+  const leaderId = useRoomStore(state => state.leaderId);
+  const isCreator = user?.id === leaderId;
+
   const [showMembers, setShowMembers] = useState(false);
+  const [showDisbandConfirm, setShowDisbandConfirm] = useState(false);
 
   // Standalone lyrics view state
   const isViewMode = !!viewLyricsId;
@@ -148,8 +154,12 @@ export default function LiveRoom() {
           <div className="flex items-center gap-3">
             <button 
               onClick={() => {
-                if (!isViewMode) leaveRoom();
-                router.back();
+                if (!isViewMode && isCreator) {
+                  setShowDisbandConfirm(true);
+                } else {
+                  if (!isViewMode) leaveRoom();
+                  router.back();
+                }
               }} 
               className="w-10 h-10 rounded-full glass flex items-center justify-center text-foreground hover:bg-foreground/5 transition-colors shadow-lg border border-foreground/5 shrink-0"
             >
@@ -280,6 +290,47 @@ export default function LiveRoom() {
           {/* Members Overlay */}
           {showMembers && (
             <MembersOverlay onClose={() => setShowMembers(false)} />
+          )}
+
+          {/* Disband Confirm Modal */}
+          {showDisbandConfirm && (
+            <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-[200] flex items-center justify-center p-6">
+              <div className="glass w-full max-w-sm rounded-3xl p-6 shadow-2xl border-foreground/10 flex flex-col text-center">
+                <div className="w-16 h-16 rounded-full bg-red-500/20 text-red-500 flex items-center justify-center mx-auto mb-4">
+                  <Power className="w-8 h-8" />
+                </div>
+                <h3 className="text-xl font-black mb-2">Disband Room?</h3>
+                <p className="text-sm text-foreground/70 mb-6">You are the creator. Disbanding will permanently close this room for everyone. If you just leave, co-leaders can continue running it.</p>
+                <div className="flex flex-col gap-3">
+                  <button 
+                    onClick={async () => {
+                      const { supabase } = await import('@/lib/supabase');
+                      await supabase.from('rooms').delete().eq('id', useRoomStore.getState().roomId);
+                      leaveRoom();
+                      router.push('/home');
+                    }}
+                    className="w-full py-3 bg-red-500 text-white hover:bg-red-600 rounded-xl font-bold transition-colors"
+                  >
+                    Disband for Everyone
+                  </button>
+                  <button 
+                    onClick={() => {
+                      leaveRoom();
+                      router.push('/home');
+                    }}
+                    className="w-full py-3 bg-foreground/10 hover:bg-foreground/20 rounded-xl font-bold transition-colors"
+                  >
+                    Just Leave
+                  </button>
+                  <button 
+                    onClick={() => setShowDisbandConfirm(false)}
+                    className="w-full py-3 text-foreground/60 hover:text-foreground font-bold transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
         </>
       )}
