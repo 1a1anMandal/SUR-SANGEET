@@ -1,11 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useRoomStore } from '@/store/useRoomStore';
 import { useUIStore } from '@/store/useUIStore';
 import { useLibraryStore } from '@/store/useLibraryStore';
-import { Search, ArrowUp, X, GripVertical, Trash2 } from 'lucide-react';
+import { Search, ArrowUp, X, GripVertical, Trash2, Flame } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import ThemeToggle from '@/components/ThemeToggle';
 import {
   DndContext,
   closestCenter,
@@ -91,6 +93,7 @@ function SortableQueueItem({ q, b, index, isMockLeader, voteQueue, removeQueueIt
 }
 
 export default function QueueSheet() {
+  const router = useRouter();
   const { queue, isMockLeader, reorderQueue, voteQueue, addToQueue } = useRoomStore();
   const { isQueueSheetOpen, setQueueSheetOpen } = useUIStore();
   const bhajans = useLibraryStore(state => state.bhajans);
@@ -129,6 +132,23 @@ export default function QueueSheet() {
     >
       <div className="w-12 h-1.5 bg-foreground/20 rounded-full mx-auto mt-4 mb-4 shrink-0" />
       
+      {/* Room Info */}
+      <div className="px-6 mb-6 shrink-0 flex items-center justify-between">
+        <div 
+          className="flex items-center gap-3 cursor-pointer active:scale-95 transition-transform"
+          onClick={() => router.push('/home')}
+        >
+           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-black shadow-lg">
+              <Flame className="w-5 h-5 fill-current" />
+           </div>
+           <div className="flex flex-col">
+              <span className="font-black text-lg tracking-wide text-foreground leading-none mb-1">Sur Sangeet</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-primary">Room Code: {useRoomStore.getState().roomId}</span>
+           </div>
+        </div>
+        <ThemeToggle />
+      </div>
+
       <div className="px-6 flex justify-between items-center mb-4 shrink-0">
         <h3 className="text-xl font-black text-foreground">Live Queue</h3>
         <button onClick={() => setQueueSheetOpen(false)} className="text-sm font-bold text-primary bg-primary/10 hover:bg-primary/20 px-4 py-2 rounded-full transition-colors flex items-center gap-2 shrink-0">

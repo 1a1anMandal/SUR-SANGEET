@@ -20,8 +20,7 @@ export default function LiveRoom() {
   
   const { 
     isMockLeader, activeParagraphIndex: roomParaIdx, 
-    queue, participants, leaveRoom, currentBhajanId,
-    roomId, roomName
+    queue, participants, leaveRoom, currentBhajanId
   } = useRoomStore();
   const { setQueueSheetOpen, setLibrarySheetOpen } = useUIStore();
   const bhajans = useLibraryStore(state => state.bhajans);
@@ -150,65 +149,17 @@ export default function LiveRoom() {
       {/* Background Ambience */}
       <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
       
-      {/* TOP HEADER */}
-      <header className="absolute top-[env(safe-area-inset-top,0px)] left-0 w-full z-50 px-4 py-4 md:px-8">
-        <div className="max-w-4xl mx-auto w-full glass rounded-3xl p-4 flex items-start justify-between gap-4 shadow-xl border-foreground/10">
-          
-          <button 
-            onClick={() => {
-              if (!isViewMode && isCreator) {
-                setShowDisbandConfirm(true);
-              } else {
-                if (!isViewMode) leaveRoom();
-                router.back();
-              }
-            }} 
-            className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-foreground/5 flex items-center justify-center text-foreground hover:bg-foreground/10 transition-colors shrink-0 mt-2 md:mt-1"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
+      {/* NO TOP HEADER - All controls moved to Bottom Footer */}
+      {isViewMode && (
+        <button 
+          onClick={() => router.back()} 
+          className="absolute top-[env(safe-area-inset-top,1rem)] left-4 md:left-8 w-10 h-10 md:w-12 md:h-12 z-50 rounded-full glass flex items-center justify-center text-foreground hover:bg-foreground/10 transition-colors shadow-lg"
+        >
+          <ChevronLeft className="w-6 h-6" />
+        </button>
+      )}
 
-          <div 
-            className="flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform flex-1"
-            onClick={() => router.push('/home')}
-          >
-            <div className="flex flex-col items-center gap-1.5 md:gap-2 mb-2 md:mb-3">
-              <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-black shadow-lg">
-                <Flame className="w-5 h-5 md:w-6 md:h-6 fill-current" />
-              </div>
-              <span className="font-black text-lg md:text-xl tracking-wide text-foreground text-center">
-                {isViewMode ? 'Sur Sangeet' : (roomName || 'Live Room')}
-              </span>
-            </div>
-            {!isViewMode && (
-              <div className="flex items-center gap-2 bg-foreground/5 px-4 py-1.5 rounded-full border border-foreground/5">
-                <span className="text-[10px] uppercase tracking-widest text-foreground/50 font-bold">Code</span>
-                <span className="text-sm font-black text-primary tracking-widest">{roomId}</span>
-              </div>
-            )}
-          </div>
-
-          <div className="flex flex-col gap-3 items-center mt-2 md:mt-1">
-            {!isViewMode && (
-              <button 
-                onClick={() => setShowMembers(true)}
-                className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-foreground/5 rounded-full hover:bg-foreground/10 transition-colors relative"
-              >
-                <Users className="w-5 h-5 text-foreground" />
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary rounded-full text-[9px] font-bold text-black flex items-center justify-center border-2 border-background">
-                  {participants.length}
-                </span>
-              </button>
-            )}
-            <div className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-foreground/5 rounded-full">
-              <ThemeToggle />
-            </div>
-          </div>
-
-        </div>
-      </header>
-
-      <main className="flex-1 flex flex-col relative overflow-hidden w-full max-w-4xl mx-auto pt-36 md:pt-48">
+      <main className="flex-1 flex flex-col relative overflow-hidden w-full max-w-4xl mx-auto pt-8 md:pt-12">
         {/* Title Area */}
           <div className="text-center mt-2 mb-4 md:mb-8 relative z-10 animate-fade-in px-4 shrink-0">
             <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-primary mb-2 flex items-center justify-center gap-2">
@@ -256,39 +207,64 @@ export default function LiveRoom() {
           </div>
         </div>
 
-        {/* Bottom Sheet Trigger & Footer (Only in Room mode) */}
+        {/* Bottom Bar Footer (Only in Room mode) */}
         {!isViewMode && (
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full md:max-w-xl z-50">
-            <div className={`glass bg-background/95 rounded-t-[2.5rem] md:rounded-3xl p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] md:pb-4 flex items-center md:mx-2 md:mb-6 shadow-[0_-10px_30px_rgba(0,0,0,0.5)] border-t md:border border-foreground/5 ${isMockLeader ? 'justify-between' : 'justify-center'}`}>
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full md:max-w-2xl z-50">
+            <div className="glass bg-background/95 p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] md:pb-4 flex items-center justify-between shadow-[0_-10px_30px_rgba(0,0,0,0.5)] border-t border-foreground/5 md:mx-4 md:mb-6 md:rounded-3xl">
               
-              {isMockLeader && (
-                <button 
-                  onClick={() => setLibrarySheetOpen(true)}
-                  className="flex items-center gap-3 px-4 py-3 bg-foreground/5 rounded-2xl active:scale-95 transition-transform"
-                >
-                  <div className="relative">
-                    <Music2 className="w-5 h-5 text-primary" />
-                    {queue.length > 0 && (
-                      <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-background" />
-                    )}
-                  </div>
-                  <div className="text-left">
-                    <p className="text-xs font-bold text-foreground">Up Next</p>
-                    <p className="text-[10px] text-foreground/50 truncate w-24">
-                      {nextInQueueBhajan ? nextInQueueBhajan.title : 'Add to queue'}
-                    </p>
-                  </div>
-                </button>
-              )}
-
-              <div className="flex gap-2">
+              {/* Left Side: Menu + More Lyrics */}
+              <div className="flex items-center gap-3">
+                {/* Menu Button (QueueSheet) */}
                 <button 
                   onClick={() => setQueueSheetOpen(true)}
-                  className="w-12 h-12 bg-gradient-to-br from-primary to-orange-500 rounded-full flex items-center justify-center text-black shadow-lg shadow-primary/30 active:scale-95 transition-transform"
+                  className="w-12 h-12 bg-foreground/5 hover:bg-foreground/10 rounded-full flex items-center justify-center text-foreground transition-colors relative shrink-0"
                 >
                   <Menu className="w-5 h-5" />
+                  {queue.length > 0 && (
+                    <span className="absolute top-0 right-0 w-3 h-3 bg-primary rounded-full border-2 border-background" />
+                  )}
+                </button>
+
+                {/* More Lyrics Button */}
+                {isMockLeader && (
+                  <button 
+                    onClick={() => setLibrarySheetOpen(true)}
+                    className="flex items-center gap-2 px-4 py-3 bg-foreground/5 rounded-2xl active:scale-95 transition-transform"
+                  >
+                    <Music2 className="w-5 h-5 text-primary" />
+                    <span className="text-xs font-bold text-foreground truncate max-w-[80px] sm:max-w-none">More Lyrics</span>
+                  </button>
+                )}
+              </div>
+
+              {/* Right Side: Members + Exit Room */}
+              <div className="flex items-center gap-3">
+                <button 
+                  onClick={() => setShowMembers(true)}
+                  className="w-12 h-12 md:w-auto md:px-4 flex items-center justify-center bg-foreground/5 rounded-full md:rounded-2xl hover:bg-foreground/10 transition-colors relative"
+                >
+                  <Users className="w-5 h-5 text-foreground" />
+                  <span className="absolute -top-1 -right-1 md:relative md:top-auto md:right-auto md:ml-2 w-4 h-4 md:w-auto md:h-auto md:bg-transparent bg-primary rounded-full text-[9px] md:text-xs font-bold text-black md:text-foreground flex items-center justify-center border-2 border-background md:border-none">
+                    {participants.length}
+                  </span>
+                </button>
+
+                <button 
+                  onClick={() => {
+                    if (isCreator) {
+                      setShowDisbandConfirm(true);
+                    } else {
+                      leaveRoom();
+                      router.back();
+                    }
+                  }}
+                  className="flex items-center justify-center gap-2 w-12 h-12 md:w-auto md:px-5 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-full md:rounded-2xl transition-colors shrink-0"
+                >
+                  <Power className="w-5 h-5" />
+                  <span className="hidden md:inline font-bold text-sm">Exit</span>
                 </button>
               </div>
+
             </div>
           </div>
         )}
