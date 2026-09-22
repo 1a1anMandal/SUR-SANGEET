@@ -26,8 +26,8 @@ export default function LibrarySheet() {
   return (
     <div 
       className={cn(
-        "absolute bottom-0 left-0 md:left-1/2 md:-translate-x-1/2 w-full md:max-w-xl h-[85vh] glass bg-background/95 backdrop-blur-2xl rounded-t-[2.5rem] md:rounded-t-3xl z-[100] transition-transform duration-500 ease-out border-t md:border-x border-foreground/10 flex flex-col shadow-[0_-20px_50px_rgba(0,0,0,0.5)]",
-        isLibrarySheetOpen ? "translate-y-0" : "translate-y-full"
+        "absolute bottom-0 left-0 md:left-1/2 md:-translate-x-1/2 w-full md:max-w-xl h-[85vh] glass bg-background/95 backdrop-blur-2xl rounded-t-[2.5rem] md:rounded-t-3xl z-[100] transition-all duration-500 ease-out border-t md:border-x border-foreground/10 flex flex-col shadow-[0_-20px_50px_rgba(0,0,0,0.5)]",
+        isLibrarySheetOpen ? "translate-y-0 opacity-100 pointer-events-auto" : "translate-y-full opacity-0 pointer-events-none"
       )}
     >
       <div className="w-12 h-1.5 bg-foreground/20 rounded-full mx-auto mt-4 mb-4 shrink-0" />

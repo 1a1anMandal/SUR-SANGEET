@@ -144,7 +144,7 @@ export default function LiveRoom() {
   const nextInQueueBhajan = queue.length > 0 ? bhajans.find(b => b.id === queue[0].id) : null;
 
   return (
-    <div className="h-[100dvh] flex flex-col bg-background font-sans overflow-hidden relative selection:bg-primary/20">
+    <div className="fixed inset-0 flex flex-col bg-background font-sans overflow-hidden selection:bg-primary/20 z-50">
       
       {/* Background Ambience */}
       <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
