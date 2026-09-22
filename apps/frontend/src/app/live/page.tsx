@@ -144,7 +144,7 @@ export default function LiveRoom() {
   const nextInQueueBhajan = queue.length > 0 ? bhajans.find(b => b.id === queue[0].id) : null;
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-background font-sans overflow-hidden selection:bg-primary/20 z-50">
+    <div className="fixed top-0 left-0 w-full h-[100dvh] flex flex-col bg-background font-sans overflow-hidden selection:bg-primary/20 z-[9999] pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)]">
       
       {/* Background Ambience */}
       <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
@@ -213,14 +213,16 @@ export default function LiveRoom() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-64 bg-[radial-gradient(ellipse_at_center,rgba(255,122,0,0.15)_0%,transparent_70%)] pointer-events-none z-0" />
 
         {/* Lyrics Scroll Area */}
-        <div 
-          ref={scrollContainerRef}
-          className="relative z-10 flex-1 overflow-y-auto no-scrollbar px-6 scroll-smooth pb-32"
-          onScroll={handleScroll}
-          onWheel={handleUserInteraction}
-          onTouchMove={handleUserInteraction}
-        >
-          <div className="space-y-6 pt-[50vh] pb-[70vh]">
+        <div className="relative z-10 flex-1 w-full max-w-4xl mx-auto flex flex-col min-h-0">
+          <div className="absolute top-0 left-0 w-full h-8 md:h-12 bg-gradient-to-b from-background to-transparent z-20 pointer-events-none" />
+          <div 
+            ref={scrollContainerRef}
+            className="flex-1 overflow-y-auto no-scrollbar px-6 scroll-smooth pb-32 w-full"
+            onScroll={handleScroll}
+            onWheel={handleUserInteraction}
+            onTouchMove={handleUserInteraction}
+          >
+            <div className="space-y-6 pt-[50vh] pb-[70vh]">
             {activeBhajan.lyrics.map((paragraph, idx) => {
               const isActive = idx === activeParagraphIndex;
               
@@ -282,6 +284,7 @@ export default function LiveRoom() {
             </div>
           </div>
         )}
+        </div>
       </main>
 
       {/* Overlays (Queue, Library & Members) */}
