@@ -30,27 +30,16 @@ export default function LiveRoom() {
   const isViewMode = !!viewLyricsId;
   const viewBhajan = bhajans.find(b => b.id === viewLyricsId);
   const [viewParaIdx, setViewParaIdx] = useState(0);
-  const [randomSuggestions, setRandomSuggestions] = useState<any[]>([]);
   
   const scrollState = useRef<'IDLE' | 'USER_SCROLLING' | 'PROGRAMMATIC_SCROLLING'>('IDLE');
   const userScrollTimeout = useRef<NodeJS.Timeout>();
   const programmaticScrollTimeout = useRef<NodeJS.Timeout>();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-
   const activeBhajan = isViewMode ? viewBhajan : roomBhajan;
   const activeParagraphIndex = isViewMode ? viewParaIdx : roomParaIdx;
   
   const lyricsRef = useRef<(HTMLDivElement | null)[]>([]);
-
-
-  useEffect(() => {
-    // Pick 3 random bhajans for suggestions
-    const currentId = isViewMode ? viewLyricsId : roomBhajan?.id;
-    const others = bhajans.filter(b => b.id !== currentId);
-    const shuffled = [...others].sort(() => 0.5 - Math.random());
-    setRandomSuggestions(shuffled.slice(0, 3));
-  }, [viewLyricsId, roomBhajan, bhajans, isViewMode]);
 
   const handleUserInteraction = () => {
     scrollState.current = 'USER_SCROLLING';
