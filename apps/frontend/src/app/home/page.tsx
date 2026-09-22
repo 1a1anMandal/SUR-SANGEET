@@ -13,7 +13,7 @@ import FullScreenLoader from '@/components/FullScreenLoader';
 
 export default function HomeDashboard() {
   const router = useRouter();
-  const { createRoom, joinRoom, roomId } = useRoomStore();
+  const { createRoom, joinRoom, roomId, leaderId, leaveRoom } = useRoomStore();
   const user = useAuthStore(state => state.user);
   const bhajans = useLibraryStore(state => state.bhajans);
   
@@ -146,6 +146,23 @@ export default function HomeDashboard() {
                 <Play className="w-5 h-5 fill-current" /> Enter Studio
               </button>
             </div>
+
+            {user?.id === leaderId && (
+              <div className="mt-4 w-full">
+                <button 
+                  onClick={async () => {
+                    if (window.confirm('Are you sure you want to permanently disband this room?')) {
+                      const { supabase } = await import('@/lib/supabase');
+                      await supabase.from('rooms').delete().eq('id', roomId);
+                      leaveRoom();
+                    }
+                  }}
+                  className="w-full flex items-center justify-center gap-2 border border-red-500/20 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white py-3 md:py-4 rounded-xl font-bold transition-colors"
+                >
+                  Disband Room
+                </button>
+              </div>
+            )}
           </div>
         </div>
       ) : (

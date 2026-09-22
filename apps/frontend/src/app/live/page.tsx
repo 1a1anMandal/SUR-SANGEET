@@ -173,7 +173,10 @@ export default function LiveRoom() {
             )}
           </div>
 
-          <div className="flex items-center gap-3">
+          <div 
+            className="flex items-center gap-3 cursor-pointer"
+            onClick={() => router.push('/home')}
+          >
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-black shadow-[0_0_10px_rgba(255,122,0,0.4)] shrink-0">
               <Flame className="w-4 h-4 fill-current" />
             </div>
