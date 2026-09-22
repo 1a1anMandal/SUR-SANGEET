@@ -149,58 +149,61 @@ export default function LiveRoom() {
       {/* Background Ambience */}
       <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
       
-      <header className="px-4 py-4 w-full z-10 relative shrink-0">
-        <div className="max-w-4xl mx-auto w-full flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button 
-              onClick={() => {
-                if (!isViewMode && isCreator) {
-                  setShowDisbandConfirm(true);
-                } else {
-                  if (!isViewMode) leaveRoom();
-                  router.back();
-                }
-              }} 
-              className="w-10 h-10 rounded-full glass flex items-center justify-center text-foreground hover:bg-foreground/5 transition-colors shadow-lg border border-foreground/5 shrink-0"
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-            {!isViewMode && (
-              <div className="flex flex-col">
-                <span className="text-[10px] uppercase tracking-widest text-foreground/50 font-bold">Room ID</span>
-                <span className="text-sm font-black text-primary tracking-widest">{useRoomStore.getState().roomId}</span>
-              </div>
-            )}
-          </div>
+      {/* TOP HEADER */}
+      <header className="absolute top-[env(safe-area-inset-top,0px)] left-0 w-full z-50 px-4 py-4 md:px-8">
+        <div className="max-w-4xl mx-auto w-full glass rounded-3xl p-3 md:p-4 flex items-center justify-between gap-4 shadow-xl border-foreground/10">
+          
+          <button 
+            onClick={() => {
+              if (!isViewMode && isCreator) {
+                setShowDisbandConfirm(true);
+              } else {
+                if (!isViewMode) leaveRoom();
+                router.back();
+              }
+            }} 
+            className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-foreground/5 flex items-center justify-center text-foreground hover:bg-foreground/10 transition-colors shrink-0"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
 
           <div 
-            className="flex items-center gap-3 cursor-pointer"
+            className="flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform"
             onClick={() => router.push('/home')}
           >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-black shadow-[0_0_10px_rgba(255,122,0,0.4)] shrink-0">
-              <Flame className="w-4 h-4 fill-current" />
+            <div className="flex items-center gap-2 mb-1">
+              <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-black shadow-[0_0_10px_rgba(255,122,0,0.4)]">
+                <Flame className="w-3 h-3 md:w-4 md:h-4 fill-current" />
+              </div>
+              <span className="font-bold text-sm md:text-base tracking-wide text-foreground">Sur Sangeet</span>
             </div>
-            <span className="font-bold tracking-wide text-foreground hidden sm:inline-block">Sur Sangeet</span>
+            {!isViewMode && (
+              <div className="flex items-center gap-2 bg-foreground/5 px-3 py-1 rounded-full">
+                <span className="text-[9px] md:text-[10px] uppercase tracking-widest text-foreground/50 font-bold">Room Code</span>
+                <span className="text-xs md:text-sm font-black text-primary tracking-widest">{useRoomStore.getState().roomId}</span>
+              </div>
+            )}
           </div>
 
           <div className="flex gap-2 items-center">
             {!isViewMode && (
               <button 
                 onClick={() => setShowMembers(true)}
-                className="w-10 h-10 flex items-center justify-center bg-foreground/5 rounded-full hover:bg-foreground/10 transition-colors relative"
+                className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-foreground/5 rounded-full hover:bg-foreground/10 transition-colors relative"
               >
                 <Users className="w-5 h-5 text-foreground" />
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary rounded-full text-[9px] font-bold text-black flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-primary rounded-full text-[9px] font-bold text-black flex items-center justify-center border-2 border-background">
                   {participants.length}
                 </span>
               </button>
             )}
             <ThemeToggle />
           </div>
+
         </div>
       </header>
 
-      <main className="flex-1 flex flex-col relative overflow-hidden w-full max-w-4xl mx-auto">
+      <main className="flex-1 flex flex-col relative overflow-hidden w-full max-w-4xl mx-auto pt-24 md:pt-32">
         {/* Title Area */}
           <div className="text-center mt-2 mb-4 md:mb-8 relative z-10 animate-fade-in px-4 shrink-0">
             <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-primary mb-2 flex items-center justify-center gap-2">
