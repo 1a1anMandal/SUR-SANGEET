@@ -131,23 +131,37 @@ export default function AdminDashboard() {
     });
     const uniqueCategories = Array.from(catMap.entries()).map(([name, count]) => ({ name, count })).sort((a,b) => b.count - a.count);
 
-    // Mock Chart Data for recent 7 days
-    const dates = Array.from({length: 7}, (_, _i) => {
+    // Real Chart Data for recent 7 days
+    const last7Days = Array.from({length: 7}, (_, i) => {
       const d = new Date();
-      d.setDate(d.getDate() - (6 - _i));
-      return d.toLocaleDateString('en-US', { weekday: 'short' });
+      d.setDate(d.getDate() - (6 - i));
+      return {
+        name: d.toLocaleDateString('en-US', { weekday: 'short' }),
+        fullDate: d.toISOString().split('T')[0]
+      };
     });
     
-    // Distribute actual users/bhajans counts into these buckets (simplified mock distribution based on totals)
-    const baseUsers = Math.max(10, Math.floor(usersList.length / 7));
-    const baseBhajans = Math.max(5, Math.floor(bhajansList.length / 7));
+    let runningTotalUsers = usersList.filter(u => {
+      if (!u.created_at) return true;
+      const d = new Date(u.created_at);
+      const startOf7Days = new Date();
+      startOf7Days.setDate(startOf7Days.getDate() - 7);
+      return d < startOf7Days;
+    }).length;
 
-    const charts = dates.map((date, i) => ({
-      name: date,
-      Users: Math.floor(baseUsers * (0.5 + Math.random())),
-      Bhajans: Math.floor(baseBhajans * (0.5 + Math.random())),
-      Traffic: Math.floor(100 + Math.random() * 500)
-    }));
+    const charts = last7Days.map(day => {
+      const dailyUsers = usersList.filter(u => u.created_at && u.created_at.startsWith(day.fullDate)).length;
+      const dailyBhajans = bhajansList.filter(b => b.created_at && b.created_at.startsWith(day.fullDate)).length;
+      
+      runningTotalUsers += dailyUsers;
+
+      return {
+        name: day.name,
+        Users: dailyUsers,
+        Bhajans: dailyBhajans,
+        TotalUsers: runningTotalUsers
+      };
+    });
 
     const sortedBhajans = [...bhajansList].sort((a, b) => {
       const aIncomplete = !a.title || !a.english_title;
@@ -262,16 +276,16 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6 mt-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
               <div className="glass p-6 rounded-3xl border-foreground/5">
-                <h3 className="font-bold mb-6 flex items-center gap-2"><LayoutDashboard className="w-4 h-4"/> Weekly Engagement (Traffic)</h3>
+                <h3 className="font-bold mb-6 flex items-center gap-2"><Flame className="w-4 h-4"/> Total User Growth</h3>
                 <div className="h-64">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={chartData}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#8884d8" opacity={0.1} />
                       <XAxis dataKey="name" stroke="#8884d8" fontSize={12} tickLine={false} axisLine={false} />
                       <Tooltip contentStyle={{ backgroundColor: '#1c1c1c', border: 'none', borderRadius: '12px' }} />
-                      <Line type="monotone" dataKey="Traffic" stroke="#FF7A00" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                      <Line type="monotone" dataKey="TotalUsers" name="Total Users" stroke="#FF7A00" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
