@@ -138,19 +138,19 @@ export default function LiveRoom() {
   const nextInQueueBhajan = queue.length > 0 ? bhajans.find(b => b.id === queue[0].id) : null;
 
   return (
-    <div className="h-screen flex flex-col bg-background font-sans overflow-hidden relative selection:bg-primary/20">
+    <div className="h-[100dvh] flex flex-col bg-background font-sans overflow-hidden relative selection:bg-primary/20">
       
       {/* Background Ambience */}
       <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
       
-      <header className="px-4 py-4 flex items-center justify-between z-10 relative">
+      <header className="px-4 py-4 flex items-center justify-between z-10 relative shrink-0">
         <div className="flex items-center gap-3">
           <button 
             onClick={() => {
               if (!isViewMode) leaveRoom();
               router.back();
             }} 
-            className="w-10 h-10 rounded-full glass flex items-center justify-center text-foreground hover:bg-foreground/5 transition-colors shadow-lg border border-foreground/5"
+            className="w-10 h-10 rounded-full glass flex items-center justify-center text-foreground hover:bg-foreground/5 transition-colors shadow-lg border border-foreground/5 shrink-0"
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
@@ -163,10 +163,10 @@ export default function LiveRoom() {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-black shadow-[0_0_10px_rgba(255,122,0,0.4)]">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center text-black shadow-[0_0_10px_rgba(255,122,0,0.4)] shrink-0">
             <Flame className="w-4 h-4 fill-current" />
           </div>
-          <span className="font-bold tracking-wide text-foreground">Sur Sangeet</span>
+          <span className="font-bold tracking-wide text-foreground hidden sm:inline-block">Sur Sangeet</span>
         </div>
 
         <div className="flex gap-2 items-center">
@@ -187,7 +187,7 @@ export default function LiveRoom() {
 
       <main className="flex-1 flex flex-col relative overflow-hidden">
         {/* Title Area */}
-          <div className="text-center mt-2 mb-8 relative z-10 animate-fade-in px-4">
+          <div className="text-center mt-2 mb-4 md:mb-8 relative z-10 animate-fade-in px-4 shrink-0">
             <p className="text-[10px] font-bold tracking-[0.3em] uppercase text-primary mb-2 flex items-center justify-center gap-2">
               <Flame className="w-3 h-3 text-orange-500" /> {activeBhajan.deity} BHAJAN
             </p>
@@ -234,7 +234,7 @@ export default function LiveRoom() {
         {/* Bottom Sheet Trigger & Footer (Only in Room mode) */}
         {!isViewMode && (
           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full md:max-w-xl z-50">
-            <div className={`glass bg-background/95 rounded-t-3xl md:rounded-3xl p-4 flex items-center mx-2 mb-2 md:mb-6 shadow-[0_-10px_30px_rgba(0,0,0,0.5)] border border-foreground/5 ${isMockLeader ? 'justify-between' : 'justify-center'}`}>
+            <div className={`glass bg-background/95 rounded-t-[2.5rem] md:rounded-3xl p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] md:pb-4 flex items-center md:mx-2 md:mb-6 shadow-[0_-10px_30px_rgba(0,0,0,0.5)] border-t md:border border-foreground/5 ${isMockLeader ? 'justify-between' : 'justify-center'}`}>
               
               {isMockLeader && (
                 <button 

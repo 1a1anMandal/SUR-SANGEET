@@ -30,9 +30,9 @@ export default function LibrarySheet() {
         isLibrarySheetOpen ? "translate-y-0" : "translate-y-full"
       )}
     >
-      <div className="w-12 h-1.5 bg-foreground/20 rounded-full mx-auto mt-4 mb-4" />
+      <div className="w-12 h-1.5 bg-foreground/20 rounded-full mx-auto mt-4 mb-4 shrink-0" />
       
-      <div className="px-6 flex justify-between items-center mb-4">
+      <div className="px-6 flex justify-between items-center mb-4 shrink-0">
         <div>
           <h3 className="text-xl font-black text-foreground">Add to Queue</h3>
           <p className="text-xs text-foreground/50">Select bhajans from the library</p>
@@ -43,7 +43,7 @@ export default function LibrarySheet() {
       </div>
 
       {/* Search Area */}
-      <div className="px-6 mb-6">
+      <div className="px-6 mb-6 shrink-0">
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/40" />
           <input 
@@ -57,7 +57,7 @@ export default function LibrarySheet() {
       </div>
 
       {/* Library List */}
-      <div className="flex-1 overflow-y-auto px-6 pb-10 no-scrollbar space-y-3">
+      <div className="flex-1 overflow-y-auto px-6 pb-[calc(2.5rem+env(safe-area-inset-bottom,0px))] no-scrollbar space-y-3">
         {searchResults.map(b => {
           const inQueue = useRoomStore.getState().queue.some(q => q.id === b.id);
           

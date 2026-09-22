@@ -127,17 +127,17 @@ export default function QueueSheet() {
         isQueueSheetOpen ? "translate-y-0" : "translate-y-full"
       )}
     >
-      <div className="w-12 h-1.5 bg-foreground/20 rounded-full mx-auto mt-4 mb-4" />
+      <div className="w-12 h-1.5 bg-foreground/20 rounded-full mx-auto mt-4 mb-4 shrink-0" />
       
-      <div className="px-6 flex justify-between items-center mb-4">
+      <div className="px-6 flex justify-between items-center mb-4 shrink-0">
         <h3 className="text-xl font-black text-foreground">Live Queue</h3>
-        <button onClick={() => setQueueSheetOpen(false)} className="text-sm font-bold text-primary bg-primary/10 hover:bg-primary/20 px-4 py-2 rounded-full transition-colors flex items-center gap-2">
+        <button onClick={() => setQueueSheetOpen(false)} className="text-sm font-bold text-primary bg-primary/10 hover:bg-primary/20 px-4 py-2 rounded-full transition-colors flex items-center gap-2 shrink-0">
           <X className="w-4 h-4" /> Close
         </button>
       </div>
 
       {/* Queue List */}
-      <div className="flex-1 overflow-y-auto px-6 pb-10 no-scrollbar overflow-x-hidden">
+      <div className="flex-1 overflow-y-auto px-6 pb-[calc(2.5rem+env(safe-area-inset-bottom,0px))] no-scrollbar overflow-x-hidden">
         <div className="flex justify-between items-center mb-4">
           <p className="text-[10px] text-foreground/40 uppercase tracking-widest">
             {queue.length} / 10 Songs

@@ -17,7 +17,7 @@ export default function MembersOverlay({ onClose }: MembersOverlayProps) {
   return (
     <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-[100] flex items-center justify-center p-6">
       <div className="glass w-full max-w-sm rounded-3xl p-6 shadow-2xl border-foreground/10 flex flex-col max-h-[80vh]">
-        <h3 className="text-xl font-black mb-4 flex items-center gap-2">
+        <h3 className="text-xl font-black mb-4 flex items-center gap-2 shrink-0">
           <Star className="w-5 h-5 text-primary" /> Live Devotees
         </h3>
         
@@ -66,7 +66,7 @@ export default function MembersOverlay({ onClose }: MembersOverlayProps) {
         
         <button 
           onClick={onClose} 
-          className="mt-6 w-full py-3 bg-foreground/10 hover:bg-foreground/20 rounded-xl font-bold transition-colors"
+          className="mt-6 w-full py-3 bg-foreground/10 hover:bg-foreground/20 rounded-xl font-bold transition-colors shrink-0"
         >
           Close
         </button>
