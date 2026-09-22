@@ -10,6 +10,7 @@ export interface Bhajan {
   lyrics: BhajanParagraph[];
   coverImage?: string;
   status: 'approved' | 'pending';
+  created_at?: string;
 }
 
 export interface User {
