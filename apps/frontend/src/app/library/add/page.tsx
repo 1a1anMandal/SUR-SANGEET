@@ -72,19 +72,19 @@ export default function AddBhajan() {
   };
 
   return (
-    <main className="pb-24 pt-6 px-4">
-      <header className="flex justify-between items-center mb-8">
+    <main className="pb-24 pt-6 px-4 md:px-8 max-w-3xl mx-auto min-h-screen">
+      <header className="flex justify-between items-center mb-8 md:mb-12">
         <div className="flex items-center gap-4">
-          <button onClick={() => router.back()} className="glass p-2 rounded-full">
+          <button onClick={() => router.back()} className="glass p-2 rounded-full hover:bg-foreground/10 transition-colors">
             <ChevronLeft className="w-6 h-6" />
           </button>
-          <h1 className="text-2xl font-black">Add Bhajan</h1>
+          <h1 className="text-2xl md:text-3xl font-black">Add Bhajan</h1>
         </div>
         <ThemeToggle />
       </header>
 
       <form onSubmit={handleSubmit} className="space-y-6 relative">
-        <div className="glass p-6 rounded-3xl space-y-5 border-primary/20">
+        <div className="glass p-6 md:p-10 rounded-3xl space-y-5 md:space-y-6 border-primary/20 shadow-xl">
           
           <div>
             <label className="text-[10px] font-bold uppercase tracking-wider text-foreground/60 mb-2 block ml-1">

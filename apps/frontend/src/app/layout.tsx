@@ -25,8 +25,7 @@ export default function RootLayout({
         <ThemeProvider>
           <AuthGuard>
             <DataFetcher />
-            {/* Mobile constraint container for Desktop */}
-            <div className="mx-auto w-full max-w-[480px] min-h-screen bg-background relative overflow-x-hidden no-scrollbar shadow-2xl">
+            <div className="w-full min-h-screen bg-background relative overflow-x-hidden no-scrollbar">
               {children}
               <BottomNav />
             </div>

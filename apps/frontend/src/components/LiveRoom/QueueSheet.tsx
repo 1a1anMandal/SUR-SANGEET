@@ -123,7 +123,7 @@ export default function QueueSheet() {
   return (
     <div 
       className={cn(
-        "absolute bottom-0 left-0 w-full h-[85vh] glass bg-background/95 backdrop-blur-2xl rounded-t-[2.5rem] z-[100] transition-transform duration-500 ease-out border-t border-foreground/10 flex flex-col shadow-[0_-20px_50px_rgba(0,0,0,0.5)]",
+        "absolute bottom-0 left-0 md:left-1/2 md:-translate-x-1/2 w-full md:max-w-xl h-[85vh] glass bg-background/95 backdrop-blur-2xl rounded-t-[2.5rem] md:rounded-t-3xl z-[100] transition-transform duration-500 ease-out border-t md:border-x border-foreground/10 flex flex-col shadow-[0_-20px_50px_rgba(0,0,0,0.5)]",
         isQueueSheetOpen ? "translate-y-0" : "translate-y-full"
       )}
     >

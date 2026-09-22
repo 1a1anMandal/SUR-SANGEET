@@ -221,8 +221,8 @@ if (!activeBhajan) {
 
         {/* Bottom Sheet Trigger & Footer (Only in Room mode) */}
         {!isViewMode && (
-          <div className="absolute bottom-0 left-0 w-full z-50">
-            <div className={`glass bg-background/95 rounded-t-3xl p-4 flex items-center mx-2 mb-2 shadow-[0_-10px_30px_rgba(0,0,0,0.5)] border border-foreground/5 ${isMockLeader ? 'justify-between' : 'justify-center'}`}>
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full md:max-w-xl z-50">
+            <div className={`glass bg-background/95 rounded-t-3xl md:rounded-3xl p-4 flex items-center mx-2 mb-2 md:mb-6 shadow-[0_-10px_30px_rgba(0,0,0,0.5)] border border-foreground/5 ${isMockLeader ? 'justify-between' : 'justify-center'}`}>
               
               {isMockLeader && (
                 <button 

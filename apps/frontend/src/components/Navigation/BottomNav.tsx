@@ -18,7 +18,7 @@ export default function BottomNav() {
   ];
 
   return (
-    <div className="fixed bottom-0 w-full max-w-[480px] z-50 glass rounded-t-2xl px-6 py-4 flex justify-between items-center">
+    <div className="fixed bottom-0 left-0 w-full z-50 glass rounded-t-2xl px-6 py-4 flex justify-between md:justify-center md:gap-24 items-center">
       {navItems.map((item) => {
         const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
         return (
