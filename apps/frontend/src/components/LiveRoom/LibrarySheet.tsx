@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRoomStore } from '@/store/useRoomStore';
 import { useUIStore } from '@/store/useUIStore';
 import { useLibraryStore } from '@/store/useLibraryStore';
-import { Search, X, Plus } from 'lucide-react';
+import { Search, X, Plus, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function LibrarySheet() {
@@ -58,24 +58,31 @@ export default function LibrarySheet() {
 
       {/* Library List */}
       <div className="flex-1 overflow-y-auto px-6 pb-10 no-scrollbar space-y-3">
-        {searchResults.map(b => (
-          <div key={b.id} className="relative flex items-center justify-between glass p-4 rounded-2xl border-foreground/5 bg-foreground/[0.02]">
-            <div className="flex flex-col flex-1 overflow-hidden pr-4">
-              <span className="font-bold text-sm truncate">{b.title}</span>
-              {b.english_title && <span className="text-xs text-foreground/50 truncate">{b.english_title}</span>}
-              <span className="text-[10px] uppercase text-foreground/40 bg-foreground/5 px-2 py-0.5 rounded w-fit mt-1">{b.deity}</span>
+        {searchResults.map(b => {
+          const inQueue = useRoomStore.getState().queue.some(q => q.id === b.id);
+          
+          return (
+            <div key={b.id} className="relative flex items-center justify-between glass p-4 rounded-2xl border-foreground/5 bg-foreground/[0.02]">
+              <div className="flex flex-col flex-1 overflow-hidden pr-4">
+                <span className="font-bold text-sm truncate">{b.title}</span>
+                {b.english_title && <span className="text-xs text-foreground/50 truncate">{b.english_title}</span>}
+                <span className="text-[10px] uppercase text-foreground/40 bg-foreground/5 px-2 py-0.5 rounded w-fit mt-1">{b.deity}</span>
+              </div>
+              {inQueue ? (
+                <div className="w-10 h-10 flex items-center justify-center bg-green-500/10 text-green-500 rounded-full shrink-0">
+                  <Check className="w-5 h-5" />
+                </div>
+              ) : (
+                <button 
+                  onClick={() => addToQueue(b.id)}
+                  className="w-10 h-10 flex items-center justify-center bg-primary/10 hover:bg-primary/20 text-primary rounded-full transition-colors shrink-0"
+                >
+                  <Plus className="w-5 h-5" />
+                </button>
+              )}
             </div>
-            <button 
-              onClick={() => {
-                addToQueue(b.id);
-                setLibrarySheetOpen(false);
-              }}
-              className="w-10 h-10 flex items-center justify-center bg-primary/10 hover:bg-primary/20 text-primary rounded-full transition-colors shrink-0"
-            >
-              <Plus className="w-5 h-5" />
-            </button>
-          </div>
-        ))}
+          );
+        })}
         {searchResults.length === 0 && (
           <div className="text-center text-foreground/40 mt-10">
             <p className="text-sm font-medium">No bhajans found.</p>

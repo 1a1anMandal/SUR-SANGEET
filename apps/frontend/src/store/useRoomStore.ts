@@ -1,11 +1,13 @@
 import { create } from 'zustand';
 import { QueueItem, Bhajan } from '@app/shared';
 import { useLibraryStore } from './useLibraryStore';
+import { useAuthStore } from './useAuthStore';
 import { supabase } from '@/lib/supabase';
 import { RealtimeChannel } from '@supabase/supabase-js';
 
 interface RoomStore {
   roomId: string;
+  roomName: string;
   leaderId: string;
   coLeaders: string[];
   currentBhajanId: string | null;
@@ -15,7 +17,7 @@ interface RoomStore {
   channel: RealtimeChannel | null;
   activeBhajan: Bhajan | null;
   isMockLeader: boolean;
-  createRoom: (leaderId: string, leaderName: string, bhajanId: string) => Promise<string>;
+  createRoom: (leaderId: string, leaderName: string, bhajanId: string, roomName: string) => Promise<string>;
   joinRoom: (roomId: string, userId: string, name: string) => Promise<boolean>;
   setParagraph: (index: number) => void;
   addToQueue: (bhajanId: string) => void;
@@ -31,6 +33,7 @@ interface RoomStore {
 
 export const useRoomStore = create<RoomStore>((set, get) => ({
   roomId: '',
+  roomName: '',
   leaderId: '',
   coLeaders: [],
   currentBhajanId: null,
@@ -52,6 +55,7 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     
     set({
       roomId: room.id,
+      roomName: room.name || 'Live Room',
       leaderId: room.leader_id,
       coLeaders: room.co_leaders || [],
       currentBhajanId: room.current_bhajan_id,
@@ -75,11 +79,28 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
         const state = channel.presenceState();
         const participants = Object.values(state).map((p: any) => p[0]);
         set({ participants });
+
+        // Auto-disband if no leaders are left in presence (grace period for refresh)
+        const hasLeader = participants.some((p: any) => p.role === 'leader' || p.role === 'co-leader');
+        if (!(window as any).disbandTimeout && !hasLeader && participants.length > 0) {
+          (window as any).disbandTimeout = setTimeout(() => {
+            const currentParticipants = get().participants;
+            if (!currentParticipants.some((p: any) => p.role === 'leader' || p.role === 'co-leader')) {
+              alert("The room has been closed as all leaders have left.");
+              get().leaveRoom();
+              window.location.href = '/home';
+            }
+          }, 10000); // 10 seconds grace period for leader page refresh
+        } else if (hasLeader && (window as any).disbandTimeout) {
+          clearTimeout((window as any).disbandTimeout);
+          (window as any).disbandTimeout = null;
+        }
       })
       .on('broadcast', { event: 'scroll' }, ({ payload }) => {
         set({ activeParagraphIndex: payload.index });
       })
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'rooms', filter: `id=eq.${roomId}` }, (payload) => {
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'rooms', filter: `id=eq.${roomId}` }, 
+(payload) => {
         const room = payload.new;
         const bhajans = useLibraryStore.getState().bhajans;
         const activeBhajan = bhajans.find(b => b.id === room.current_bhajan_id) || null;
@@ -95,6 +116,12 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
           isMockLeader: isLeader || isCoLeader
         });
       })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'rooms', filter: `id=eq.${roomId}` }, 
+() => {
+        alert("The room has been closed by the leader.");
+        get().leaveRoom();
+        window.location.href = '/home';
+      })
       .subscribe(async (status) => {
         if (status === 'SUBSCRIBED') {
           const isLeader = get().leaderId === userId;
@@ -109,7 +136,7 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     set({ channel });
   },
 
-  createRoom: async (leaderId, leaderName, bhajanId) => {
+  createRoom: async (leaderId, leaderName, bhajanId, roomName) => {
     const roomId = Math.floor(1000 + Math.random() * 9000).toString();
     
     // Auto-queue 10 random bhajans
@@ -124,6 +151,7 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     
     const { error } = await supabase.from('rooms').insert({
       id: roomId,
+      name: roomName,
       leader_id: leaderId,
       co_leaders: [],
       current_bhajan_id: bhajanId,
@@ -138,6 +166,12 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     }
 
     await get()._fetchAndApplyRoomState(roomId);
+    
+    // Auto-save to recently joined rooms
+    const recent = JSON.parse(localStorage.getItem('recent_rooms') || '[]');
+    const updatedRecent = [{ roomId, roomName, lastSeenLiveAt: Date.now() }, ...recent.filter((r: any) => r.roomId !== roomId)].slice(0, 5);
+    localStorage.setItem('recent_rooms', JSON.stringify(updatedRecent));
+    
     set({ isMockLeader: true });
     get()._subscribeToRoom(roomId, leaderId, leaderName);
     
@@ -165,6 +199,12 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     
     // Save to local storage for persistence on refresh
     localStorage.setItem('active_room_id', roomId);
+
+    // Auto-save to recently joined rooms
+    const roomName = room.name || 'Live Room';
+    const recent = JSON.parse(localStorage.getItem('recent_rooms') || '[]');
+    const updatedRecent = [{ roomId, roomName, lastSeenLiveAt: Date.now() }, ...recent.filter((r: any) => r.roomId !== roomId)].slice(0, 5);
+    localStorage.setItem('recent_rooms', JSON.stringify(updatedRecent));
     
     // Check if the joining user is the leader or a co-leader
     const isLeader = room.leader_id === userId;
@@ -272,14 +312,40 @@ export const useRoomStore = create<RoomStore>((set, get) => ({
     if (error) console.error('Error removing co-leader', error);
   },
 
-  leaveRoom: () => {
-    const { channel } = get();
+  leaveRoom: async () => {
+    const { channel, roomId, leaderId, coLeaders, participants } = get();
+    
+    // Check if we are the last leader/co-leader leaving
+    const { user } = useAuthStore.getState();
+    if (user && roomId) {
+      const isLeader = leaderId === user.id;
+      const isCoLeader = coLeaders.includes(user.id);
+      
+      if (isLeader || isCoLeader) {
+        const otherLeaders = participants.filter(p => 
+          p.id !== user.id && (p.role === 'leader' || p.role === 'co-leader')
+        );
+        
+        if (otherLeaders.length === 0) {
+          // Delete room from DB, this triggers the DELETE postgres event for everyone else
+          await supabase.from('rooms').delete().eq('id', roomId);
+        }
+      }
+    }
+
     if (channel) {
       supabase.removeChannel(channel);
     }
     localStorage.removeItem('active_room_id');
+    
+    // Also remove from recently joined list if it's there
+    const recent = JSON.parse(localStorage.getItem('recent_rooms') || '[]');
+    const updatedRecent = recent.filter((r: any) => r.roomId !== roomId);
+    localStorage.setItem('recent_rooms', JSON.stringify(updatedRecent));
+
     set({
       roomId: '',
+      roomName: '',
       leaderId: '',
       coLeaders: [],
       currentBhajanId: null,

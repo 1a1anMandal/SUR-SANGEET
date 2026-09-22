@@ -18,12 +18,14 @@ export default function LiveRoom() {
   const viewLyricsId = searchParams.get('viewLyrics');
   
   const { 
-    isMockLeader, activeBhajan: roomBhajan, activeParagraphIndex: roomParaIdx, 
-    queue, participants, leaveRoom
+    isMockLeader, activeParagraphIndex: roomParaIdx, 
+    queue, participants, leaveRoom, currentBhajanId
   } = useRoomStore();
   const { setQueueSheetOpen, setLibrarySheetOpen } = useUIStore();
   const bhajans = useLibraryStore(state => state.bhajans);
   
+  const roomBhajan = bhajans.find(b => b.id === currentBhajanId) || null;
+
   const [showMembers, setShowMembers] = useState(false);
 
   // Standalone lyrics view state
@@ -102,7 +104,28 @@ export default function LiveRoom() {
   }, [activeParagraphIndex, activeBhajan]);
 
 
-if (!activeBhajan) {
+  const [isRestoring, setIsRestoring] = useState(true);
+  useEffect(() => {
+    const savedRoomId = localStorage.getItem('active_room_id');
+    if (savedRoomId && !useRoomStore.getState().roomId) {
+      setIsRestoring(true);
+      // Failsafe in case restore fails or takes too long
+      const t = setTimeout(() => setIsRestoring(false), 3000);
+      return () => clearTimeout(t);
+    } else {
+      setIsRestoring(false);
+    }
+  }, [useRoomStore.getState().roomId]);
+
+  if (!activeBhajan) {
+    if (isRestoring && !isViewMode) {
+      return (
+        <div className="min-h-screen flex items-center justify-center">
+          <p className="text-foreground/50 animate-pulse">Restoring room...</p>
+        </div>
+      );
+    }
+
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="text-foreground/50">No bhajan selected.</p>

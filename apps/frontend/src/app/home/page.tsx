@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
 import { useRoomStore } from '@/store/useRoomStore';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useLibraryStore } from '@/store/useLibraryStore';
@@ -26,6 +27,7 @@ export default function HomeDashboard() {
   const [startingBhajan, setStartingBhajan] = useState(bhajans.length > 0 ? bhajans[0].id : '');
   const [isCreating, setIsCreating] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
+  const [recentRooms, setRecentRooms] = useState<any[]>([]);
 
   const validBhajans = bhajans.filter(b => b.lyrics && b.lyrics.length > 0);
   const categories = ['All', ...Array.from(new Set(validBhajans.map(b => b.deity)))].filter(Boolean);
@@ -36,13 +38,40 @@ export default function HomeDashboard() {
     return matchesSearch && matchesCategory;
   });
 
+  useEffect(() => {
+    const fetchRecentRooms = async () => {
+      const stored = JSON.parse(localStorage.getItem('recent_rooms') || '[]');
+      if (stored.length === 0) return;
+
+      const { data: activeRooms } = await supabase.from('rooms').select('id');
+      const activeIds = activeRooms?.map(r => r.id) || [];
+      
+      const now = Date.now();
+      const updatedStored = stored.filter((room: any) => {
+        const isLive = activeIds.includes(room.roomId);
+        if (isLive) room.lastSeenLiveAt = now;
+        // Keep if live, OR if last seen live within 2 hours
+        return isLive || (now - room.lastSeenLiveAt < 2 * 60 * 60 * 1000);
+      });
+
+      localStorage.setItem('recent_rooms', JSON.stringify(updatedStored));
+      
+      setRecentRooms(updatedStored.map((room: any) => ({
+        ...room,
+        isLive: activeIds.includes(room.roomId)
+      })));
+    };
+    
+    fetchRecentRooms();
+  }, []);
+
   const handleCreateRoom = async () => {
     if (!user) return;
     if (!roomName) return alert('Enter room name');
     if (!startingBhajan) return alert('Please select a bhajan to start with');
     
     setIsCreating(true);
-    await createRoom(user.id, user.name, startingBhajan);
+    await createRoom(user.id, user.name, startingBhajan, roomName);
     setIsCreating(false);
   };
 
@@ -120,8 +149,50 @@ export default function HomeDashboard() {
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10 items-start">
-          <div className="glass p-6 md:p-8 rounded-3xl border-foreground/5 shadow-xl relative overflow-hidden group">
+        <div className="space-y-12 relative z-10">
+          {recentRooms.length > 0 && (
+            <div className="glass p-6 md:p-8 rounded-3xl border-foreground/5 shadow-xl">
+              <h2 className="text-sm md:text-lg font-bold flex items-center gap-2 mb-4 md:mb-6">
+                <Users className="w-4 h-4 md:w-5 md:h-5 text-primary" /> Recent Rooms
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {recentRooms.map((room) => (
+                  <div 
+                    key={room.roomId}
+                    className="glass p-4 rounded-2xl border-foreground/5 flex items-center justify-between gap-4 bg-foreground/[0.02] hover:bg-foreground/[0.05] transition-all"
+                  >
+                    <div className="overflow-hidden">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className={`w-2 h-2 rounded-full ${room.isLive ? 'bg-green-500 animate-pulse' : 'bg-foreground/30'}`} />
+                        <span className="text-[10px] uppercase tracking-widest text-foreground/50 font-bold">
+                          {room.isLive ? 'Live' : 'Recent'}
+                        </span>
+                      </div>
+                      <p className="text-sm font-bold truncate">{room.roomName || room.roomId}</p>
+                      <p className="text-xs text-foreground/40 font-mono mt-0.5">Code: {room.roomId}</p>
+                    </div>
+                    <button
+                      onClick={async () => {
+                        if (!user) return;
+                        setIsJoining(true);
+                        const success = await joinRoom(room.roomId, user.id, user.name);
+                        setIsJoining(false);
+                        if (success) {
+                          router.push('/live');
+                        }
+                      }}
+                      className="p-3 rounded-xl bg-primary/10 text-primary hover:bg-primary/20 transition-colors shrink-0"
+                    >
+                      <Play className="w-4 h-4 fill-current" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            <div className="glass p-6 md:p-8 rounded-3xl border-foreground/5 shadow-xl relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
             
             <div className="space-y-6 relative z-10">
@@ -236,6 +307,7 @@ export default function HomeDashboard() {
                 {isJoining ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Join Room'}
               </button>
             </form>
+          </div>
           </div>
         </div>
       )}

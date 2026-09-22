@@ -76,12 +76,16 @@ export default function AdminDashboard() {
     setRoomsList(prev => prev.filter(r => r.id !== id));
 
     // Then delete from DB
-    const { error } = await supabase.from('rooms').delete().eq('id', id);
+    const { data, error } = await supabase.from('rooms').delete().eq('id', id).select();
+    
     if (error) {
       alert('Error disbanding room: ' + error.message);
-      // Revert if error
       fetchData(); 
+    } else if (!data || data.length === 0) {
+      alert('Failed to delete room. Please check if you have Admin privileges in the database.');
+      fetchData();
     }
+    
     setActionLoading('');
   };
 
